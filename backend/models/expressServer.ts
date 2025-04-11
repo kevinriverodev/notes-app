@@ -4,7 +4,7 @@ class ExpressServer {
     private app: Application;
     private port: string;
 
-    constructor(port: string | null) {
+    constructor(port?: string) {
         this.app = express();  
         port ?  this.port = port : this.port = process.env.PORT || '8080';
     }
