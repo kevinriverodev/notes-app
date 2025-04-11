@@ -18,10 +18,19 @@ class DBConection {
         this.connection = new Sequelize(this.DBname, this.user, this.password, { host: this.host, dialect: this.dialect });
     }
 
-    getConnection() {
+    async getConnection() {
         try {
-            this.connection.authenticate();
+            await this.connection.authenticate();
             console.log(`${this.DBname} database connected...`);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async closeConnection() {
+        try {
+            await this.connection.close();
+            console.log(`${this.DBname} database disconnected...`);
         } catch (error) {
             console.log(error);
         }
