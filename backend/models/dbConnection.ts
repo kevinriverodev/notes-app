@@ -6,7 +6,7 @@ class DBConection {
     private password: string;
     private host: string;
     private dialect: Dialect;
-    private db: Sequelize;
+    private sequelize: Sequelize;
 
     constructor(DBname?: string, user?: string, password?: string, host?: string, dialect?: Dialect) {
         DBname ? this.DBname = DBname : this.DBname = process.env.DB_NAME || 'notesapp';
@@ -15,12 +15,16 @@ class DBConection {
         host ? this.host = host : this.host = process.env.host || 'localhost';
         dialect ? this.dialect = dialect : this.dialect = 'mysql';
 
-        this.db = new Sequelize(this.DBname, this.user, this.password, { host: this.host, dialect: this.dialect });
+        this.sequelize = new Sequelize(this.DBname, this.user, this.password, { host: this.host, dialect: this.dialect });
+    }
+
+    get sequelizeInstance() {
+        return this.sequelize;
     }
 
     async getConnection() {
         try {
-            await this.db.authenticate();
+            await this.sequelize.authenticate();
             console.log(`${this.DBname} database connected...`);
         } catch (error) {
             console.log(error);
@@ -29,15 +33,11 @@ class DBConection {
 
     async closeConnection() {
         try {
-            await this.db.close();
+            await this.sequelize.close();
             console.log(`${this.DBname} database disconnected...`);
         } catch (error) {
             console.log(error);
         }
-    }
-
-    getdefineModelFunction() {
-        return this.db.define;
     }
 }
 
