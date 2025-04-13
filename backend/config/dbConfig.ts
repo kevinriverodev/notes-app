@@ -1,5 +1,5 @@
 import DBConection from "../models/dbConnection";
 
-const db = new DBConection(undefined, undefined, undefined, undefined, undefined);
+const db = new DBConection();
 
 export default db;

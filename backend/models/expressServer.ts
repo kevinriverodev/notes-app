@@ -27,7 +27,7 @@ class ExpressServer {
         this.app.use(path, router);
     }
 
-    setRoutes(routes: { path: string, router: Router}[]) {
+    setRoutes(routes: { path: string, router: Router }[]) {
         routes.forEach(route => {
             this.app.use(route.path, route.router);
         });

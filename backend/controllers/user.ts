@@ -1,0 +1,109 @@
+import { Request, Response } from "express";
+import bcrypt from "bcrypt";
+import User from "../models/user";
+
+export const getUsers = async (req: Request, res: Response) => {
+    try {
+        const users = await User.findAndCountAll({
+            where: {
+                status: true
+            }
+        });
+
+        const userData = users.rows.map(user => {
+            const { password, status, ...data } = user.toJSON();
+
+            return data;
+        });
+
+        res.status(200).json({ count: users.count, users: userData });
+
+    } catch (error: unknown) {
+        res.status(500).json(error);
+    }
+}
+
+export const getUser = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    
+    try {
+        const user = await User.findOne({
+            where: {
+                id,
+                status: true
+            }
+        });
+
+        const { password, status, ...data } = user?.toJSON();
+
+        res.json({ user: data });
+
+    } catch (error: unknown) {
+        res.status(500).json(error);
+    }
+}
+
+export const createUser = async (req: Request, res: Response) => {    
+    const { username, firstName, lastName, email, password } = req.body;
+
+    const salt = bcrypt.genSaltSync();
+    const hash = bcrypt.hashSync(password, salt);
+
+    try {
+        const user = await User.create({ username, firstName, lastName, email, password: hash, status: true, role: 'USER' });
+
+        const { password: pass, status, ...data } = user?.toJSON();
+        
+        res.status(201).json({ user: data });
+        
+    } catch (error: unknown) {
+        res.status(500).json(error);
+    }
+}
+
+export const updateUser = async (req: Request, res: Response) => {
+    const { username, firstName, lastName, email, password } = req.body;
+    const { id } = req.params;
+
+    const salt = bcrypt.genSaltSync();
+    const hash = bcrypt.hashSync(password, salt);
+
+    try {
+        const user = await User.findOne({
+            where: {
+                id,
+                status: true
+            }
+        });
+
+        await user?.update({ username, firstName, lastName, email, password: hash });
+
+        const { password: pass, status, ...data } = user?.toJSON();
+
+        res.status(200).json({ user: data });
+
+    } catch (error: unknown) {
+        res.status(500).json(error);
+    }
+}
+
+export const deleteUser = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+        const user = await User.findOne({
+            where: {
+                id
+            }
+        });
+
+        await user?.update({ status: false });
+
+        const { password, status, ...data } = user?.toJSON();
+
+        res.status(200).json({ user: data });
+        
+    } catch (error: unknown) {
+        res.status(500).json(error);
+    }
+}

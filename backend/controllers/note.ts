@@ -5,7 +5,7 @@ export const getUserNotes = async (req: Request, res: Response) => {
     const { uid } = req.headers;
 
     try {
-        const notes = await Note.findAll({
+        const notes = await Note.findAndCountAll({
             where: {
                 userId: uid,
                 status: true
@@ -21,10 +21,10 @@ export const getUserNotes = async (req: Request, res: Response) => {
 
 export const getNoteById = async (req: Request, res: Response) => {
     const { uid } = req.headers;
-    const { id } = req.params
+    const { id } = req.params;
 
     try {
-        const note = await Note.findAll({
+        const note = await Note.findOne({
             where: {
                 id,
                 userId: uid,
@@ -65,8 +65,7 @@ export const updateNote = async (req: Request, res: Response) => {
             }
         });
 
-        note?.update({ title, description });
-        note?.save();
+        await note?.update({ title, description });
 
         res.status(200).json(note);
     
@@ -87,8 +86,7 @@ export const deleteNote = async (req: Request, res: Response) => {
             }
         });
 
-        note?.update({ status: false });
-        note?.save();
+        await note?.update({ status: false });
 
         res.status(200).json(note);
     
