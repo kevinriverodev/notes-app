@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 
 const generateJWT = (uid: string) : Promise<string> =>  {
     return new Promise((resolve, reject) => {

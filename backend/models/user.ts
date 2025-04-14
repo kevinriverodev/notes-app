@@ -1,14 +1,15 @@
-import { DataTypes } from "sequelize";
-import db from "../config/dbConfig";
+import { DataTypes } from 'sequelize';
+import db from '../config/db-config';
 
 const User = db.sequelizeInstance.define('User', {
     username: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     firstName: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
     },
     lastName: {
         type: DataTypes.STRING,
@@ -16,7 +17,8 @@ const User = db.sequelizeInstance.define('User', {
     },
     email: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     password: {
         type: DataTypes.STRING,

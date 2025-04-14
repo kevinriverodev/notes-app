@@ -1,6 +1,6 @@
-import { DataTypes } from "sequelize";
-import db from "../config/dbConfig";
-import User from "./user";
+import { DataTypes } from 'sequelize';
+import db from '../config/db-config';
+import User from './user';
 
 const Note = db.sequelizeInstance.define('Note', {
     title: {

@@ -1,6 +1,7 @@
-import { Request, Response } from "express";
-import bcrypt from "bcrypt";
-import User from "../models/user";
+import { Request, Response } from 'express';
+import bcrypt from 'bcrypt';
+
+import User from '../models/user';
 
 export const getUsers = async (req: Request, res: Response) => {
     try {
@@ -44,13 +45,13 @@ export const getUser = async (req: Request, res: Response) => {
 }
 
 export const createUser = async (req: Request, res: Response) => {    
-    const { username, firstName, lastName, email, password } = req.body;
+    const { username, firstName, lastName, email, password, role } = req.body;
 
     const salt = bcrypt.genSaltSync();
     const hash = bcrypt.hashSync(password, salt);
 
     try {
-        const user = await User.create({ username, firstName, lastName, email, password: hash, status: true, role: 'USER' });
+        const user = await User.create({ username, firstName, lastName, email, password: hash, status: true, role });
 
         const { password: pass, status, ...data } = user?.toJSON();
         
@@ -76,7 +77,12 @@ export const updateUser = async (req: Request, res: Response) => {
             }
         });
 
-        await user?.update({ username, firstName, lastName, email, password: hash });
+        if (!user) {
+            res.status(400).json({ msg: 'No user found' });
+            return;
+        }
+
+        await user.update({ username, firstName, lastName, email, password: hash });
 
         const { password: pass, status, ...data } = user?.toJSON();
 
@@ -97,7 +103,12 @@ export const deleteUser = async (req: Request, res: Response) => {
             }
         });
 
-        await user?.update({ status: false });
+        if (!user) {
+            res.status(400).json({ msg: 'No user found' });
+            return;
+        }
+
+        await user.update({ status: false });
 
         const { password, status, ...data } = user?.toJSON();
 

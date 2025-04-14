@@ -1,16 +1,26 @@
-import { Request, Response } from "express";
-import Note from "../models/note";
+import { Request, Response } from 'express';
 
-export const getUserNotes = async (req: Request, res: Response) => {
-    const { uid } = req.headers;
+import Note from '../models/note';
+
+export const getUserNotes = async (req: Request, res: Response) => { 
+    
+    if (!req.user) {
+        res.status(401).json({ msg: 'Unverified user' });
+        return;
+    }
 
     try {
         const notes = await Note.findAndCountAll({
             where: {
-                userId: uid,
+                userId: req.user.id,
                 status: true
             }
         });
+
+        if (!notes) {
+            res.status(400).json({ msg: 'No notes found' });
+            return;
+        }
 
         res.status(200).json(notes);
 
@@ -20,17 +30,26 @@ export const getUserNotes = async (req: Request, res: Response) => {
 }
 
 export const getNoteById = async (req: Request, res: Response) => {
-    const { uid } = req.headers;
     const { id } = req.params;
+
+    if (!req.user) {
+        res.status(401).json({ msg: 'Unverified user' });
+        return;
+    }
 
     try {
         const note = await Note.findOne({
             where: {
                 id,
-                userId: uid,
+                userId: req.user.id,
                 status: true
             }
         });
+
+        if (!note) {
+            res.status(400).json({ msg: 'No note found' });
+            return;
+        }
 
         res.status(200).json(note);
 
@@ -40,10 +59,15 @@ export const getNoteById = async (req: Request, res: Response) => {
 }
 
 export const createNote = async (req: Request, res: Response) => {
-    const { title, description, status, userId } = req.body;
+    const { title, description } = req.body;
+
+    if (!req.user) {
+        res.status(401).json({ msg: 'Unverified user' });
+        return;
+    }
 
     try {
-        const note = await Note.create({ title, description, status, userId });
+        const note = await Note.create({ title, description, status: true, userId: req.user.id });
 
         res.status(201).json(note);
         
@@ -53,19 +77,28 @@ export const createNote = async (req: Request, res: Response) => {
 }
 
 export const updateNote = async (req: Request, res: Response) => {
-    const { uid } = req.headers;
     const { id } = req.params;
     const { title, description } = req.body;
+
+    if (!req.user) {
+        res.status(401).json({ msg: 'Unverified user' });
+        return;
+    }
 
     try {
         const note = await Note.findOne({
             where: {
                 id,
-                userId: uid
+                userId: req.user.id
             }
         });
 
-        await note?.update({ title, description });
+        if (!note) {
+            res.status(400).json({ msg: 'No note found' });
+            return;
+        }
+
+        await note.update({ title, description });
 
         res.status(200).json(note);
     
@@ -75,18 +108,27 @@ export const updateNote = async (req: Request, res: Response) => {
 }
 
 export const deleteNote = async (req: Request, res: Response) => {
-    const { uid } = req.headers;
     const { id } = req.params;
+
+    if (!req.user) {
+        res.status(401).json({ msg: 'Unverified user' });
+        return;
+    }
 
     try {
         const note = await Note.findOne({
             where: {
                 id,
-                userId: uid
+                userId: req.user.id
             }
         });
 
-        await note?.update({ status: false });
+        if (!note) {
+            res.status(400).json({ msg: 'No note found' });
+            return;
+        }
+
+        await note.update({ status: false });
 
         res.status(200).json(note);
     

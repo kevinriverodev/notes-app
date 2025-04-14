@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 
-import server from "./config/serverConfig";
+import server from './config/server-config';
 
 const main = async () => {
     dotenv.config();

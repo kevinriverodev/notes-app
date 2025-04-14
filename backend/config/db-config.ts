@@ -1,4 +1,4 @@
-import DBConection from "../models/dbConnection";
+import DBConection from '../models/dbConnection';
 
 const db = new DBConection();
 
