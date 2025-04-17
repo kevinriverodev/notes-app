@@ -19,16 +19,16 @@ router.get('/:id', [
 
 router.post('/', [
     validateJWT,
-    check('title', 'Invalid title length').trim().isLength({ min: 1, max: 100 }),
-    check('description', 'Invalid description length').trim().isLength({ min: 1, max: 200 }),
+    check('title', 'Invalid title length').trim().isLength({ min: 1, max: 255 }),
+    check('description', 'Invalid description length').trim().isLength({ min: 1, max: 255 }),
     validateFields
 ], createNote);
 
 router.put('/:id', [
     validateJWT,
     check('id', 'Invalid id - Non-numeric id').trim().isInt(),
-    check('title', 'Invalid title length').trim().isLength({ min: 1, max: 100 }),
-    check('description', 'Invalid description length').trim().isLength({ min: 1, max: 200 }),
+    check('title', 'Invalid title length').trim().isLength({ min: 1, max: 255 }),
+    check('description', 'Invalid description length').trim().isLength({ min: 1, max: 255 }),
     validateFields
 ], updateNote);
 

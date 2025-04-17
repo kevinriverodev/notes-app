@@ -14,6 +14,7 @@ export const authUser = async (req: Request, res: Response) => {
                 [Op.or]: [{ email: username }, { username }],
             },
         });
+        
 
         if (!user) {
             res.status(401).json({ msg: 'Invalid username/email' });
@@ -35,6 +36,8 @@ export const authUser = async (req: Request, res: Response) => {
         }
 
         const token = await generateJWT(id);
+
+        res.cookie('token', token, { sameSite: false });
 
         res.status(200).json({
             user: data,
@@ -58,6 +61,8 @@ export const registerUser = async (req: Request, res: Response) => {
         const { password: pass, status, ...data } = user?.toJSON();
         
         const token = await generateJWT(data.id);
+
+        res.cookie('token', token, { sameSite: false });
 
         res.status(201).json({
             user: data,
