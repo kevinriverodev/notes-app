@@ -8,7 +8,7 @@ const Note = db.sequelizeInstance.define('Note', {
         allowNull: false,
     },
     description: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
     },
     status: {

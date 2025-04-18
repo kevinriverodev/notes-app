@@ -1,28 +1,57 @@
 import { Request, Response } from 'express';
+import { Op } from 'sequelize';
 
 import Note from '../models/note';
 
 export const getUserNotes = async (req: Request, res: Response) => { 
-    
+    const { query } = req.query;
+
     if (!req.user) {
         res.status(401).json({ msg: 'Unverified user' });
         return;
     }
 
     try {
-        const notes = await Note.findAndCountAll({
-            where: {
-                userId: req.user.id,
-                status: true
+        if (query) {
+            const notes = await Note.findAndCountAll({
+                where: {
+                    [Op.or]: [
+                        {
+                          title: {
+                            [Op.like]: `%${query}%` },
+                        },
+                        {
+                          description: {
+                            [Op.like]: `%${query}%`  
+                          }
+                        }
+                    ],
+                    [Op.and]: [{ userId: req.user.id, }, { status: true }]
+                }
+            });
+
+            if (!notes) {
+                res.status(400).json({ msg: 'No notes found' });
+                return;
             }
-        });
+    
+            res.status(200).json(notes);
 
-        if (!notes) {
-            res.status(400).json({ msg: 'No notes found' });
-            return;
+        } else {
+            const notes = await Note.findAndCountAll({
+                where: {
+                    userId: req.user.id,
+                    status: true
+                }
+            });
+
+            if (!notes) {
+                res.status(400).json({ msg: 'No notes found' });
+                return;
+            }
+    
+            res.status(200).json(notes);
         }
-
-        res.status(200).json(notes);
 
     } catch (error: unknown) {
         res.status(500).json(error);
