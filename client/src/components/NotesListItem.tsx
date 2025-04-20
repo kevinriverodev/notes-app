@@ -1,9 +1,19 @@
+import { NoteObj } from '../Home';
+
 interface NoteListItemProps {
-    title: string;
+    note: NoteObj;
+    onToggleModal: (isVisible: boolean) => void;
+    onSelectNote: (note: NoteObj) => void;
 }
 
-export default function NoteListItem({ title }: NoteListItemProps) {
+export default function NoteListItem({ note, onToggleModal, onSelectNote }: NoteListItemProps) {
+
+    function handleFillDetailsForm() {
+        onSelectNote(note);
+        onToggleModal(true);
+    }
+
     return (
-        <li className='w-full p-2 hover:bg-[#282A3A]'><a className='w-full inline-block' href="">{title}</a></li>
+        <li onClick={handleFillDetailsForm} className='w-full p-2 hover:bg-[#282A3A]'><a className='w-full inline-block' href='#'>{note.title}</a></li>
     )
 }

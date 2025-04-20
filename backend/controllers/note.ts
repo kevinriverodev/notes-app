@@ -27,7 +27,10 @@ export const getUserNotes = async (req: Request, res: Response) => {
                         }
                     ],
                     [Op.and]: [{ userId: req.user.id, }, { status: true }]
-                }
+                },
+                order: [
+                    ['updatedAt', 'DESC']
+                ]
             });
 
             if (!notes) {
@@ -42,7 +45,10 @@ export const getUserNotes = async (req: Request, res: Response) => {
                 where: {
                     userId: req.user.id,
                     status: true
-                }
+                },
+                order: [
+                    ['updatedAt', 'DESC']
+                ]
             });
 
             if (!notes) {

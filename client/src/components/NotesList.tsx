@@ -2,10 +2,12 @@ import NotesListItem from './NotesListItem';
 import { NoteObj } from '../Home';
 
 interface NotesListProps {
-    notes: Array<NoteObj>
+    notes: Array<NoteObj>;
+    onToggleModal: (isVisible: boolean) => void;
+    onSelectNote: (note: NoteObj) => void;
 }
 
-export default function NotesList({ notes }: NotesListProps) {
+export default function NotesList({ notes, onToggleModal, onSelectNote }: NotesListProps) {
     return (
         <>
             <h3 className='font-bold'>Notes list</h3>
@@ -13,7 +15,7 @@ export default function NotesList({ notes }: NotesListProps) {
             <ul className='w-full text-left'>
                 {
                     notes.map((note: NoteObj) => (
-                        <NotesListItem key={note.id} title={note.title} />
+                        <NotesListItem onSelectNote={onSelectNote} onToggleModal={onToggleModal} key={note.id} note={note} />
                     ))
                 }
             </ul>
