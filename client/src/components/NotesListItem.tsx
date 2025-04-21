@@ -1,4 +1,4 @@
-import { NoteObj } from '../Home';
+import { NoteObj } from '../pages/Home';
 
 interface NoteListItemProps {
     note: NoteObj;

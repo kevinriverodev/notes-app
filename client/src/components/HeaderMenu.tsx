@@ -2,12 +2,13 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { FaUser } from 'react-icons/fa';
 import { FaAngleDown } from 'react-icons/fa6';
 import { FaSignOutAlt } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 export default function HeaderMenu() {
     return (
         <Menu as='div' className='text-left self-center'>
             <div>
-                <MenuButton className='inline-flex w-full justify-center gap-x-1.5 rounded-md bg-[#161821] text-md font-semibold text-white shadow-xs'>
+                <MenuButton className='inline-flex w-full justify-center gap-x-1.5 rounded-md bg-[#161821] text-md font-semibold text-[#e2e2e2] shadow-xs'>
                     <FaUser className='self-center' />
                     User Admin
                     <FaAngleDown className='self-center text-xs' />
@@ -21,16 +22,16 @@ export default function HeaderMenu() {
                     <MenuItem>
                         <a
                             href='#'
-                            className='block px-4 py-2 text-white data-focus:bg-[#282A3A] data-focus:text-white data-focus:outline-hidden'
+                            className='block px-4 py-2 text-[#e2e2e2] data-focus:bg-[#282A3A] data-focus:text-[#e2e2e2] data-focus:outline-hidden'
                         >
-                            Account settings
+                            <Link to='/profile'>Account settings</Link>
                         </a>
                     </MenuItem>
                     <form action='#' method='POST'>
                         <MenuItem>
                             <button
                                 type='submit'
-                                className='block w-full px-4 py-2 text-left text-white data-focus:bg-[#282A3A] data-focus:text-white data-focus:outline-hidden'
+                                className='block w-full px-4 py-2 text-left text-[#e2e2e2] data-focus:bg-[#282A3A] data-focus:text-[#e2e2e2] data-focus:outline-hidden'
                             >
                                 <div className='inline-flex w-full gap-x-1.5'>
                                     Sign out

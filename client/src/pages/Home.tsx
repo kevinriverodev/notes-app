@@ -2,14 +2,16 @@ import { useEffect, useState, KeyboardEvent } from 'react';
 import axios from 'axios';
 import { FaFileCirclePlus } from 'react-icons/fa6';
 
-import Main from './components/Main'
-import MainHeader from './components/MainHeader'
-import Sidebar from './components/Sidebar'
-import NotesList from './components/NotesList';
-import SearchInput from './components/SearchInput';
-import CreateNote from './components/CreateNote';
-import NoteDetails from './components/NoteDetails';
-import './Home.css'
+import Main from '../components/Main'
+import MainHeader from '../components/MainHeader'
+import Sidebar from '../components/Sidebar'
+import NotesList from '../components/NotesList';
+import SearchInput from '../components/SearchInput';
+import CreateNote from '../components/CreateNote';
+import NoteDetails from '../components/NoteDetails';
+import Note from '../components/Note';
+
+import './Home.css';
 
 export interface NoteObj {
     id: number;
@@ -61,7 +63,7 @@ export default function Home() {
             setNotes([
                 ...data.rows.map((note: NoteObj) => ({ id: note.id, title: note.title, description: note.description }))
             ]);
-            
+
         } catch (error) {
             console.log(error);
         }
@@ -69,28 +71,27 @@ export default function Home() {
 
     return (
         <div className='h-dvh flex flex-col justify-center'>
-
             <CreateNote notes={notes} onCreateNote={setNotes} onToggleModal={setIsCreateModalVisible} isVisible={isCreateModalVisible} />
-            <NoteDetails notes={notes} onDeleteNote={setNotes} note={noteSelected} onToggleModal={setIsDetailsModalVisible} isVisible={isDetailsModalVisible} />
-
+            <NoteDetails notes={notes} onChangeNote={setNotes} note={noteSelected} onToggleModal={setIsDetailsModalVisible} isVisible={isDetailsModalVisible} />
             <MainHeader />
-
-            <div className='flex w-full flex-row h-9/10'>
-
+            <div className='flex flex-row w-full h-9/10'>
                 <Sidebar>
                     <SearchInput onSearch={searchNotes} />
                     <NotesList onSelectNote={setNoteSelected} onToggleModal={setIsDetailsModalVisible} notes={notes} />
                 </Sidebar>
-
-                <Main onSelectNote={setNoteSelected} onToggleModal={setIsDetailsModalVisible} notes={notes} />
-
+                <Main>
+                    <div className='flex flex-wrap w-full h-auto justify-center gap-5'>
+                        {
+                            notes.map((note: NoteObj) => (
+                                <Note onSelectNote={setNoteSelected} onTogglemodal={setIsDetailsModalVisible} key={note.id} noteId={note.id} title={note.title} description={note.description} />
+                            ))
+                        }
+                    </div>
+                </Main>
             </div>
-
-            <button onClick={() => setIsCreateModalVisible(true)} className='inline-flex justify-center align-middle text-center gap-x-3.5 absolute bottom-10 text-lg right-10 w-40 h-15 opacity-95 shadow-lg shadow-[#1ea53f]/40 text-white font-semibold rounded-lg bg-[#21A945] hover:cursor-pointer hover:bg-[#1d8f3b]'>
-                <span className='self-center'>Create note</span>
-                <FaFileCirclePlus className='self-center' />
+            <button onClick={() => setIsCreateModalVisible(true)} className='inline-block text-center absolute bottom-10 text-lg right-10 w-40 h-15 opacity-95 shadow-lg shadow-[#1ea53f]/40 text-white font-semibold rounded-lg bg-[#21A945] hover:cursor-pointer hover:bg-[#1d8f3b]'>
+                <span>Create note <FaFileCirclePlus className='inline-block ml-1.5' /></span>
             </button>
-
         </div>
     )
 }

@@ -20,9 +20,9 @@ export default function Modal({ children, isVisible, onToggleModal, onStopEditin
             {isVisible && (
                 <div onClick={handleCloseModal} className='absolute w-full h-dvh bg-black opacity-40'></div>
             )}
-            <dialog open={isVisible ? true : false} className='w-150 h-150 mx-auto p-5 self-center bg-[#1A1C28]'>
-                <button onClick={handleCloseModal} className='w-10 h-10 bg-[#1A1C28] flex justify-center text-xl ml-auto text-white hover:cursor-pointer hover:text-gray-300'>
-                    <FaXmark className='self-center' />
+            <dialog open={isVisible ? true : false} className='w-150 mx-auto p-5 bg-[#1A1C28] rounded-sm'>
+                <button onClick={handleCloseModal} className='flex ml-auto w-10 h-10 justify-center bg-[#1A1C28] text-xl text-white hover:cursor-pointer hover:text-gray-300'>
+                    <FaXmark className='self-center'/>
                 </button>
                 {children}
             </dialog>

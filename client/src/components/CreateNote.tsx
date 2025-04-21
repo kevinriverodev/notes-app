@@ -2,7 +2,7 @@ import { useState, FormEvent } from 'react';
 import axios from 'axios';
 
 import Modal from './Modal';
-import { NoteObj } from '../Home';
+import { NoteObj } from '../pages/Home';
 
 interface CreateNoteProps {
     isVisible: boolean;
@@ -49,21 +49,18 @@ export default function CreateNote({ isVisible, onToggleModal, onCreateNote, not
         } catch (error) {
             console.log(error);
         }
-
     }
 
     return (
         <Modal isVisible={isVisible} onToggleModal={onToggleModal}>
             <form action='#' onSubmit={handleSubmit} className='flex flex-col gap-6 w-full h-auto'>
-                <fieldset className='flex flex-col text-white gap-y-5 mt-5'>
-                    <input onChange={(e) => setTitle(e.currentTarget.value)} className='font-bold text-2xl focus:outline-0' type='text' name='title' id='title' value={title} placeholder='Enter a title' />
-                    <textarea onChange={(e) => setDescription(e.currentTarget.value)} className='w-full h-90 focus:outline-0 resize-none' name='description' id='description' value={description} placeholder='Enter a description' />
+                <fieldset className='flex flex-col text-[#e2e2e2] gap-y-5 mt-5'>
+                    <input onChange={(e) => setTitle(e.currentTarget.value)} className='font-bold text-2xl p-5 focus:outline-0 bg-[#1E202D] rounded-sm' type='text' name='title' id='title' value={title} placeholder='Enter a title' required/>
+                    <textarea onChange={(e) => setDescription(e.currentTarget.value)} className='w-full h-90 focus:outline-0 p-5 resize-none bg-[#1E202D] rounded-sm' name='description' id='description' value={description} placeholder='Enter a description' required/>
                 </fieldset>
-                <div className='flex flex-row gap-x-3 justify-end'>
-                    <button type='submit' className='inline-flex justify-center align-middle text-center gap-x-2 bottom-10 text-lg right-10 w-15 h-12 opacity-95 text-white font-semibold rounded-lg bg-[#21A945] hover:cursor-pointer hover:bg-[#1d8f3b]'>
-                        <span className='self-center'>Save</span>
-                    </button>
-                </div>
+                <button type='submit' className='w-15 h-12 ml-auto text-white font-semibold rounded-lg bg-[#21A945] hover:cursor-pointer hover:bg-[#1d8f3b]'>
+                    Save
+                </button>
             </form>
         </Modal>
     )

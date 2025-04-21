@@ -1,5 +1,5 @@
 import NotesListItem from './NotesListItem';
-import { NoteObj } from '../Home';
+import { NoteObj } from '../pages/Home';
 
 interface NotesListProps {
     notes: Array<NoteObj>;
