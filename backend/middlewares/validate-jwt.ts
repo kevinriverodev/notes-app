@@ -14,7 +14,7 @@ declare global {
 }
 
 const validateJWT = async (req: Request , res: Response, next: Function) => {
-    const token = req.header('token') || '';
+    const { token } = req.cookies;
 
     if (!token) {
         res.status(401).json({ msg: 'Non-existent token in the request' });

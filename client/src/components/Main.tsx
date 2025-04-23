@@ -6,7 +6,7 @@ interface MainProps {
 
 export default function Main({ children }: MainProps) {
     return (
-        <main className='flex-4/5 w-full h-auto p-5 bg-[#1E202D] overflow-auto'>
+        <main className="flex-4/5 w-full h-auto p-5 bg-[#1E202D] overflow-auto">
             {children}
         </main>
     )

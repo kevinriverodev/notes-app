@@ -10,9 +10,9 @@ interface NotesListProps {
 export default function NotesList({ notes, onToggleModal, onSelectNote }: NotesListProps) {
     return (
         <>
-            <h3 className='font-bold'>Notes list</h3>
-            <div className='w-full my-2.5 h-[2px] bg-[#282A3A]'></div>
-            <ul className='w-full text-left'>
+            <h3 className="font-bold">Notes list</h3>
+            <div className="w-full my-2.5 h-[2px] bg-[#282A3A]"></div>
+            <ul className="w-full text-left">
                 {
                     notes.map((note: NoteObj) => (
                         <NotesListItem onSelectNote={onSelectNote} onToggleModal={onToggleModal} key={note.id} note={note} />

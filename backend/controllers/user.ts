@@ -4,6 +4,12 @@ import bcrypt from 'bcrypt';
 import User from '../models/user';
 
 export const getUsers = async (req: Request, res: Response) => {
+
+    if (!req.user) {
+        res.status(401).json({ msg: 'Unverified user' });
+        return;
+    }
+
     try {
         const users = await User.findAndCountAll({
             where: {
@@ -26,6 +32,11 @@ export const getUsers = async (req: Request, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
     const { id } = req.params;
+
+    if (!req.user) {
+        res.status(401).json({ msg: 'Unverified user' });
+        return;
+    }
     
     try {
         const user = await User.findOne({
@@ -47,6 +58,11 @@ export const getUser = async (req: Request, res: Response) => {
 export const createUser = async (req: Request, res: Response) => {    
     const { username, firstName, lastName, email, password, role } = req.body;
 
+    if (!req.user) {
+        res.status(401).json({ msg: 'Unverified user' });
+        return;
+    }
+
     const salt = bcrypt.genSaltSync();
     const hash = bcrypt.hashSync(password, salt);
 
@@ -65,6 +81,11 @@ export const createUser = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
     const { username, firstName, lastName, email, password } = req.body;
     const { id } = req.params;
+
+    if (!req.user) {
+        res.status(401).json({ msg: 'Unverified user' });
+        return;
+    }
 
     const salt = bcrypt.genSaltSync();
     const hash = bcrypt.hashSync(password, salt);
@@ -95,6 +116,11 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
     const { id } = req.params;
+
+    if (!req.user) {
+        res.status(401).json({ msg: 'Unverified user' });
+        return;
+    }
 
     try {
         const user = await User.findOne({

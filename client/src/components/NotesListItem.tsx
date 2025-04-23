@@ -14,6 +14,6 @@ export default function NoteListItem({ note, onToggleModal, onSelectNote }: Note
     }
 
     return (
-        <li onClick={handleFillDetailsForm} className='w-full p-2 hover:bg-[#282A3A]'><a className='w-full inline-block' href='#'>{note.title}</a></li>
+        <li onClick={handleFillDetailsForm} className="w-full p-2 hover:bg-[#282A3A]"><a className="w-full inline-block" href="#">{note.title}</a></li>
     )
 }
