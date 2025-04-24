@@ -1,5 +1,4 @@
-Realizar configuracion del backend, ver README.md  
-Ejecutar npm install en la raiz de la carpeta client  
-Ejecutar npm run dev  
+## Configuracion del Frontend
 
-user: userAdmin pass: 123456
+1. Ejecutar `npm install` en la raíz de la carpeta **client**.
+2. Iniciar el entorno de desarrollo con `npm run dev`.
