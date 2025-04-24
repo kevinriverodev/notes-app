@@ -1,6 +1,8 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie'
+import { ToastContainer } from 'react-toastify';
+import { showToastMsg } from '../helpers/show-toast-msg';
 
 interface user {
     username: string;
@@ -41,14 +43,14 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    useEffect(() => {
+    useEffect(() => { // Funcion para valida si hay una cookie con el token cada vez que recargue la pagina
         async function validateCookie() {
             const token = Cookies.get('token');
 
             if (!token) {
                 setIsLoading(false);
-                setIsAuthenticated(false);
                 setCurrentUser(null);
+                setIsAuthenticated(false);
                 return;
             }
 
@@ -61,8 +63,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
                 if (!data.user) {
                     setIsLoading(false);
-                    setIsAuthenticated(false);
                     setCurrentUser(null);
+                    setIsAuthenticated(false);
                     return;
                 }
 
@@ -72,8 +74,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
             } catch (error) {
                 console.log(error);
                 setIsLoading(false);
-                setIsAuthenticated(false);
                 setCurrentUser(null);
+                setIsAuthenticated(false);
             }
         }
         validateCookie();
@@ -88,13 +90,27 @@ export default function AuthProvider({ children }: AuthProviderProps) {
                 withCredentials: true
             });
 
-            const { data } = JSON.parse(JSON.stringify(response));
+            const { data, status } = JSON.parse(JSON.stringify(response));
+
+            if (status >= 400) {
+                console.log(data, status);
+                return;
+            }
 
             setCurrentUser(data.user);
             setIsAuthenticated(true)
 
         } catch (error) {
-            console.log(error);
+            if (axios.isAxiosError(error) && error.response) {
+                const { errors } = error.response.data;
+
+                errors.forEach((error: { msg: string }) => {
+                    showToastMsg({ msg: error.msg, type: 'error', position: 'bottom-left', autoClose: 8000 });
+                });
+
+            } else {
+                console.log(error);
+            }
         }
     }
 
@@ -106,12 +122,27 @@ export default function AuthProvider({ children }: AuthProviderProps) {
                 withCredentials: true
             });
 
-            const { data } = JSON.parse(JSON.stringify(response));
-            setIsAuthenticated(true);
+            const { data, status } = JSON.parse(JSON.stringify(response));
+
+            if (status >= 400) {
+                console.log(data, status);
+                return;
+            }
+
             setCurrentUser(data.user);
+            setIsAuthenticated(true);
 
         } catch (error) {
-            console.log(error);
+            if (axios.isAxiosError(error) && error.response) {
+                const { errors } = error.response.data;
+
+                errors.forEach((error: { msg: string }) => {
+                    showToastMsg({ msg: error.msg, type: 'error', position: 'bottom-left', autoClose: 8000 });
+                });
+
+            } else {
+                console.log(error);
+            }
         }
     }
 
@@ -124,6 +155,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
     return (
         <AuthContext.Provider value={{ authSignIn, authSignUp, signOut, currentUser, isAuthenticated, isLoading }}>
+            <ToastContainer />
             {children}
         </AuthContext.Provider>
     )

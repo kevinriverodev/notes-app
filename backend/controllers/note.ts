@@ -7,7 +7,7 @@ export const getUserNotes = async (req: Request, res: Response) => {
     const { query } = req.query;
 
     if (!req.user) {
-        res.status(401).json({ msg: 'Unverified user' });
+        res.status(401).json({ errors: [{ msg: 'Unverified user' }] });
         return;
     }
 
@@ -34,7 +34,7 @@ export const getUserNotes = async (req: Request, res: Response) => {
             });
 
             if (!notes) {
-                res.status(400).json({ msg: 'No notes found' });
+                res.status(400).json({ errors: [{ msg: 'No notes found' }] });
                 return;
             }
     
@@ -52,13 +52,12 @@ export const getUserNotes = async (req: Request, res: Response) => {
             });
 
             if (!notes) {
-                res.status(400).json({ msg: 'No notes found' });
+                res.status(400).json({ errors: [{ msg: 'No notes found' }] });
                 return;
             }
     
             res.status(200).json(notes);
         }
-
     } catch (error: unknown) {
         res.status(500).json(error);
     }
@@ -68,7 +67,7 @@ export const getNoteById = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     if (!req.user) {
-        res.status(401).json({ msg: 'Unverified user' });
+        res.status(401).json({ errors: [{ msg: 'Unverified user' }] });
         return;
     }
 
@@ -82,7 +81,7 @@ export const getNoteById = async (req: Request, res: Response) => {
         });
 
         if (!note) {
-            res.status(400).json({ msg: 'No note found' });
+            res.status(400).json({ errors: [{ msg: 'No note found' }] });
             return;
         }
 
@@ -97,12 +96,17 @@ export const createNote = async (req: Request, res: Response) => {
     const { title, description } = req.body;
 
     if (!req.user) {
-        res.status(401).json({ msg: 'Unverified user' });
+        res.status(401).json({ errors: [{ msg: 'Unverified user' }] });
         return;
     }
 
     try {
         const note = await Note.create({ title, description, status: true, userId: req.user.id });
+
+        if (!note) {
+            res.status(400).json({ errors: [{ msg: 'Error creating note' }] });
+            return;
+        }
 
         res.status(201).json(note);
         
@@ -116,7 +120,7 @@ export const updateNote = async (req: Request, res: Response) => {
     const { title, description } = req.body;
 
     if (!req.user) {
-        res.status(401).json({ msg: 'Unverified user' });
+        res.status(401).json({ errors: [{ msg: 'Unverified user' }] });
         return;
     }
 
@@ -129,7 +133,7 @@ export const updateNote = async (req: Request, res: Response) => {
         });
 
         if (!note) {
-            res.status(400).json({ msg: 'No note found' });
+            res.status(400).json({ errors: [{ msg: 'No note found' }] });
             return;
         }
 
@@ -146,7 +150,7 @@ export const deleteNote = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     if (!req.user) {
-        res.status(401).json({ msg: 'Unverified user' });
+        res.status(401).json({ errors: [{ msg: 'Unverified user' }] });
         return;
     }
 
@@ -159,7 +163,7 @@ export const deleteNote = async (req: Request, res: Response) => {
         });
 
         if (!note) {
-            res.status(400).json({ msg: 'No note found' });
+            res.status(400).json({ errors: [{ msg: 'No note found' }] });
             return;
         }
 

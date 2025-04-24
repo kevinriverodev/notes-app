@@ -17,7 +17,7 @@ const validateJWT = async (req: Request , res: Response, next: Function) => {
     const { token } = req.cookies;
 
     if (!token) {
-        res.status(401).json({ msg: 'Non-existent token in the request' });
+        res.status(401).json({ errors: [{ msg: 'Non-existent token in the request' }] });
         return;
     }
 
@@ -32,14 +32,14 @@ const validateJWT = async (req: Request , res: Response, next: Function) => {
          });
 
         if (!userAuth) {  
-            res.status(401).json({ msg: 'Invalid token - Unregistered user' });
+            res.status(401).json({ errors: [{ msg: 'Invalid token - Unregistered user' }] });
             return;
         }
 
         const { status, id, role } = userAuth.toJSON();
         
         if(!status) {
-            res.status(401).json({ msg: 'Invalid token - Inactive user' });
+            res.status(401).json({ errors: [{ msg: 'Invalid token - Inactive user' }] });
             return;
         }
 

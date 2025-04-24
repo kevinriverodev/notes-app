@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { showToastMsg } from '../helpers/show-toast-msg';
 
 export default function SignUp() {
 
@@ -10,8 +11,8 @@ export default function SignUp() {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
-
     const { authSignUp, isAuthenticated } = useAuth();
+    
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,12 +23,11 @@ export default function SignUp() {
         e.preventDefault();
 
         if (password !== confirmPassword) {
-            alert('Passwords don\'t match')
+            showToastMsg({ msg:'Passwords dont\'t match', type: 'error', position: 'bottom-left', autoClose: 8000 });
             return;
         }
 
         const response = await authSignUp({ username, firstName, lastName, email, password });
-
         console.log(response);
     }
 
@@ -37,7 +37,7 @@ export default function SignUp() {
                 <h1 className="font-extrabold text-4xl">Sign up</h1>
                 <form action="#" onSubmit={handleSignUp} className="flex flex-col p-7 gap-5 rounded-md bg-[#1A1C28]">
                     <fieldset className="flex flex-col text-[#e2e2e2] gap-y-3">
-                        <label className="self-start" htmlFor="username">Username/Email</label>
+                        <label className="self-start" htmlFor="username">Username</label>
                         <input onChange={(e) => setUsername(e.currentTarget.value)} className="w-full h-13 p-5 focus:outline-0 bg-[#1E202D] rounded-sm" type="text" name="username" id="username" placeholder="Username/email" required />
                         <label className="self-start" htmlFor="firstName">First name</label>
                         <input onChange={(e) => setFirstName(e.currentTarget.value)} className="w-full h-13 p-5 focus:outline-0 bg-[#1E202D] rounded-sm" type="text" name="firstName" id="firstName" placeholder="First name" required />

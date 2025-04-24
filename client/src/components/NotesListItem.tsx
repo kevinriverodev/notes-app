@@ -4,13 +4,15 @@ interface NoteListItemProps {
     note: NoteObj;
     onToggleModal: (isVisible: boolean) => void;
     onSelectNote: (note: NoteObj) => void;
+    onToggleBtn: (isVisible: boolean) => void;
 }
 
-export default function NoteListItem({ note, onToggleModal, onSelectNote }: NoteListItemProps) {
+export default function NoteListItem({ note, onToggleModal, onSelectNote, onToggleBtn }: NoteListItemProps) {
 
     function handleFillDetailsForm() {
         onSelectNote(note);
         onToggleModal(true);
+        onToggleBtn(false);
     }
 
     return (

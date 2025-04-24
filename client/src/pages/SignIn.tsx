@@ -6,8 +6,8 @@ export default function SignIn() {
 
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-
     const { authSignIn, isAuthenticated } = useAuth();
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -16,9 +16,7 @@ export default function SignIn() {
 
     async function handleSignIn(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
-
         const response = await authSignIn(username, password);
-
         console.log(response);
     }
 

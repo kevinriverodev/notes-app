@@ -17,21 +17,21 @@ export const authUser = async (req: Request, res: Response) => {
         });
         
         if (!user) {
-            res.status(401).json({ msg: 'Invalid username/email' });
+            res.status(401).json({ errors: [{ msg: 'Invalid username/email' }] });
             return;
         }
 
         const { id, status, password: hash, createdAt, updatedAt, ...data } = user.toJSON();
 
         if (!status) {
-            res.status(401).json({ msg: 'Inactive user' });
+            res.status(401).json({ errors: [{ msg: 'Inactive user' }] });
             return;
         }
 
         const isValidPassword = await bcrypt.compare(String(password), hash);
 
         if (!isValidPassword) {
-            res.status(401).json({ msg: 'Invalid password' });
+            res.status(401).json({ errors: [{ msg: 'Invalid password' }] });
             return;
         }
 
@@ -57,9 +57,14 @@ export const registerUser = async (req: Request, res: Response) => {
     try {
         const user = await User.create({ username, firstName, lastName, email, password: hash, status: true, role: 'USER' });
 
-        const { password: pass, status, id, createdAt, updatedAt, ...data } = user?.toJSON();
+        if (!user) {
+            res.status(401).json({ errors: [{ msg: 'Error registering user' }] });
+            return;
+        }
+
+        const { password: pass, status, id, createdAt, updatedAt, ...data } = user.toJSON();
         
-        const token = await generateJWT(data.id);
+        const token = await generateJWT(id);
 
         res.cookie('token', token, { sameSite: 'none', secure: true });
 
@@ -76,7 +81,7 @@ export const validateCookie = async (req: Request, res: Response) => {
     const { token } = req.cookies;
 
     if(!token) {
-        res.status(401).json({ msg: 'Non-existent token in the request' });
+        res.status(401).json({ errors: [{ msg: 'Non-existent token in the request' }] });
         return;
     }
 
@@ -91,7 +96,7 @@ export const validateCookie = async (req: Request, res: Response) => {
         });
     
         if (!userAuth) {
-            res.status(401).json({ msg: 'Invalid token' });
+            res.status(401).json({ errors: [{ msg: 'Invalid token' }] });
             return;
         }
     

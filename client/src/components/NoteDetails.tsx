@@ -4,18 +4,21 @@ import { FaPenToSquare } from 'react-icons/fa6';
 import { FaFloppyDisk } from 'react-icons/fa6';
 import { FaTrash } from 'react-icons/fa6';
 
+import { ToastMsgProps } from '../helpers/show-toast-msg';
 import { NoteObj } from '../pages/Home';
 import Modal from './Modal'
 
 interface NoteDetailsProps {
     isVisible: boolean;
-    onToggleModal: (isVisible: boolean) => void;
     note: NoteObj;
     notes: NoteObj[];
+    onToggleModal: (isVisible: boolean) => void;
     onChangeNote: (notes: NoteObj[]) => void;
+    onShowMsg: (options: ToastMsgProps) => void;
+    onToggleBtn: (isVisible: boolean) => void;
 }
 
-export default function NoteDetails({ isVisible, onToggleModal, note, notes, onChangeNote }: NoteDetailsProps) {
+export default function NoteDetails({ isVisible, note, notes, onChangeNote, onToggleModal, onShowMsg, onToggleBtn }: NoteDetailsProps) {
 
     const [isReadOnly, setIsReadOnly] = useState<boolean>(true);
     const [title, setTitle] = useState<string>('');
@@ -27,7 +30,12 @@ export default function NoteDetails({ isVisible, onToggleModal, note, notes, onC
                 withCredentials: true
             });
 
-            const { data } = JSON.parse(JSON.stringify(response));
+            const { data, status } = JSON.parse(JSON.stringify(response));
+
+            if (status >= 400) {
+                console.log(data, status);
+                return;
+            }
 
             const filteredNotes = notes.filter((note) => note.id !== data?.id);
 
@@ -36,9 +44,20 @@ export default function NoteDetails({ isVisible, onToggleModal, note, notes, onC
             ]);
 
             onToggleModal(false);
+            onToggleBtn(true);
+            onShowMsg({ msg: 'Note successfully deleted', type: 'success', position: 'bottom-left', autoClose: 4000 });
 
         } catch (error) {
-            console.log(error);
+            if (axios.isAxiosError(error) && error.response) {
+                const { errors } = error.response.data;
+
+                errors.forEach((error: { msg: string }) => {
+                    onShowMsg({ msg: error.msg, type: 'error', position: 'bottom-left', autoClose: 8000 });
+                });
+
+            } else {
+                console.log(error);
+            }
         }
     }
 
@@ -70,14 +89,25 @@ export default function NoteDetails({ isVisible, onToggleModal, note, notes, onC
             onChangeNote(updatedNotes);
             setIsReadOnly(true);
             onToggleModal(false);
+            onToggleBtn(true);
+            onShowMsg({ msg: 'Note successfully updated', type: 'success', position: 'bottom-left', autoClose: 4000 });
 
         } catch (error) {
-            console.log(error);
+            if (axios.isAxiosError(error) && error.response) {
+                const { errors } = error.response.data;
+
+                errors.forEach((error: { msg: string }) => {
+                    onShowMsg({ msg: error.msg, type: 'error', position: 'bottom-left', autoClose: 8000 });
+                });
+
+            } else {
+                console.log(error);
+            }
         }
     }
 
     return (
-        <Modal isVisible={isVisible} onToggleModal={onToggleModal} onStopEditing={setIsReadOnly} >
+        <Modal onToggleBtn={onToggleBtn} isVisible={isVisible} onToggleModal={onToggleModal} onStopEditing={setIsReadOnly} >
             <form action="#" onSubmit={handleUpdateNote} className="flex flex-col gap-6 w-full h-auto">
                 <fieldset className="flex flex-col text-[#e2e2e2] gap-y-5 mt-5">
                     <input onChange={(e) => setTitle(e.currentTarget.value)} className="font-bold text-2xl focus:outline-0 p-5 rounded-sm" type="text" name="title" defaultValue={note ? note.title : "Unknown title"} readOnly={isReadOnly} required />
