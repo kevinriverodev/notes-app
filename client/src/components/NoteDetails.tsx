@@ -3,7 +3,7 @@ import axios from 'axios';
 import { FaPenToSquare } from 'react-icons/fa6';
 import { FaFloppyDisk } from 'react-icons/fa6';
 import { FaTrash } from 'react-icons/fa6';
-
+import { handleErrors } from '../helpers/handle-errors';
 import { ToastMsgProps } from '../helpers/show-toast-msg';
 import { NoteObj } from '../pages/Home';
 import Modal from './Modal'
@@ -30,7 +30,7 @@ export default function NoteDetails({ isVisible, note, notes, onChangeNote, onTo
                 withCredentials: true
             });
 
-            const { data, status } = JSON.parse(JSON.stringify(response));
+            const { data, status } = response;
 
             if (status >= 400) {
                 console.log(data, status);
@@ -48,16 +48,7 @@ export default function NoteDetails({ isVisible, note, notes, onChangeNote, onTo
             onShowMsg({ msg: 'Note successfully deleted', type: 'success', position: 'bottom-left', autoClose: 4000 });
 
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                const { errors } = error.response.data;
-
-                errors.forEach((error: { msg: string }) => {
-                    onShowMsg({ msg: error.msg, type: 'error', position: 'bottom-left', autoClose: 8000 });
-                });
-
-            } else {
-                console.log(error);
-            }
+            handleErrors(error);
         }
     }
 
@@ -72,7 +63,7 @@ export default function NoteDetails({ isVisible, note, notes, onChangeNote, onTo
                 withCredentials: true
             });
 
-            const { data } = JSON.parse(JSON.stringify(response));
+            const { data } = response;
 
             const updatedNotes = notes.map(noteobj => {
                 if (noteobj.id === note.id) {
@@ -93,16 +84,7 @@ export default function NoteDetails({ isVisible, note, notes, onChangeNote, onTo
             onShowMsg({ msg: 'Note successfully updated', type: 'success', position: 'bottom-left', autoClose: 4000 });
 
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                const { errors } = error.response.data;
-
-                errors.forEach((error: { msg: string }) => {
-                    onShowMsg({ msg: error.msg, type: 'error', position: 'bottom-left', autoClose: 8000 });
-                });
-
-            } else {
-                console.log(error);
-            }
+            handleErrors(error);
         }
     }
 

@@ -1,6 +1,6 @@
 import { useState, FormEvent } from 'react';
 import axios from 'axios';
-
+import { handleErrors } from '../helpers/handle-errors';
 import { ToastMsgProps } from '../helpers/show-toast-msg';
 import Modal from './Modal';
 import { NoteObj } from '../pages/Home';
@@ -30,7 +30,7 @@ export default function CreateNote({ isVisible, notes, onToggleModal, onCreateNo
                 withCredentials: true
             });
 
-            const { data, status } = JSON.parse(JSON.stringify(response));
+            const { data, status } = response;
 
             if (status >= 400) {
                 console.log(data, status);
@@ -55,15 +55,7 @@ export default function CreateNote({ isVisible, notes, onToggleModal, onCreateNo
             setDescription('');
 
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                const { errors } = error.response.data;
-
-                errors.forEach((error: { msg: string }) => {
-                    onShowMsg({ msg: error.msg, type: 'error', position: 'bottom-left', autoClose: 8000 });
-                });
-            } else {
-                console.log(error);
-            }
+            handleErrors(error);
         }
     }
 

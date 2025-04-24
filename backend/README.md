@@ -1,4 +1,4 @@
-## Configuración del Backend
+# Configuración del Backend
 
 1. Ejecutar `npm install` en la raíz de la carpeta **backend**.
 2. Configurar las variables de entorno en el archivo **.env**.

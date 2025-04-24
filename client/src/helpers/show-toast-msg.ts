@@ -1,4 +1,4 @@
-import { ToastPosition, toast } from "react-toastify";
+import { ToastPosition, toast } from 'react-toastify';
 
 export interface ToastMsgProps {
   msg: string;
@@ -16,17 +16,17 @@ export function showToastMsg({
     theme,
 }: ToastMsgProps) {
     switch (type) {
-        case "success":
-            toast.success(msg, { type, position, autoClose, theme: theme || "light", });
+        case 'success':
+            toast.success(msg, { type, position, autoClose, theme: theme || 'light', });
         break;
-        case "error":
-            toast.error(msg, { type, position, autoClose, theme: theme || "light" });
+        case 'error':
+            toast.error(msg, { type, position, autoClose, theme: theme || 'light' });
             break;
-        case "info":
-            toast.info(msg, { type, position, autoClose, theme: theme || "light" });
+        case 'info':
+            toast.info(msg, { type, position, autoClose, theme: theme || 'light' });
             break;
-        case "warning":
-            toast.warn(msg, { type, position, autoClose, theme: theme || "light" });
+        case 'warning':
+            toast.warn(msg, { type, position, autoClose, theme: theme || 'light' });
         break;
   }
 }

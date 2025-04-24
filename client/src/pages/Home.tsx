@@ -1,7 +1,7 @@
 import { useEffect, useState, KeyboardEvent } from 'react';
 import axios from 'axios';
 import { FaFileCirclePlus } from 'react-icons/fa6';
-
+import { handleErrors } from '../helpers/handle-errors';
 import { showToastMsg } from '../helpers/show-toast-msg';
 import Main from '../components/Main'
 import MainHeader from '../components/MainHeader'
@@ -42,7 +42,7 @@ export default function Home() {
                     withCredentials: true
                 });
 
-                const { data, status } = JSON.parse(JSON.stringify(response));
+                const { data, status } = response;
 
                 if (status >= 400) {
                     console.log(data, status);
@@ -54,16 +54,7 @@ export default function Home() {
                 ]);
 
             } catch (error) {
-                if (axios.isAxiosError(error) && error.response) {
-                    const { errors } = error.response.data;
-
-                    errors.forEach((error: { msg: string }) => {
-                        showToastMsg({ msg: error.msg, type: 'error', position: 'bottom-left', autoClose: 8000 });
-                    });
-
-                } else {
-                    console.log(error);
-                }
+                handleErrors(error);
             }
         }
         fetchNotes();
@@ -78,23 +69,14 @@ export default function Home() {
                 withCredentials: true
             });
 
-            const { data } = JSON.parse(JSON.stringify(response));
+            const { data } = response;
 
             setNotes([
                 ...data.rows.map((note: NoteObj) => ({ id: note.id, title: note.title, description: note.description }))
             ]);
 
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                const { errors } = error.response.data;
-
-                errors.forEach((error: { msg: string }) => {
-                    showToastMsg({ msg: error.msg, type: 'error', position: 'bottom-left', autoClose: 8000 });
-                });
-
-            } else {
-                console.log(error);
-            }
+            handleErrors(error);
         }
     }
 
@@ -110,10 +92,13 @@ export default function Home() {
                 </Sidebar>
                 <Main>
                     <div className="flex flex-wrap w-full h-auto justify-center gap-5">
-                        {
+                        {notes.length > 0 ?
                             notes.map((note: NoteObj) => (
                                 <Note onToggleBtn={setIsCreateBtnVisible} onSelectNote={setNoteSelected} onTogglemodal={setIsDetailsModalVisible} key={note.id} noteId={note.id} title={note.title} description={note.description} />
                             ))
+                        :   (
+                                <p className="text-[#e2e2e2] mt-10 font-bold text-2xl">No notes found</p>
+                            )
                         }
                     </div>
                 </Main>

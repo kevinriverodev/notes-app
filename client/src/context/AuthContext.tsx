@@ -2,7 +2,7 @@ import { createContext, ReactNode, useContext, useEffect, useState } from 'react
 import axios from 'axios';
 import Cookies from 'js-cookie'
 import { ToastContainer } from 'react-toastify';
-import { showToastMsg } from '../helpers/show-toast-msg';
+import { handleErrors } from '../helpers/handle-errors';
 
 interface user {
     username: string;
@@ -59,7 +59,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
                     withCredentials: true
                 });
 
-                const { data } = JSON.parse(JSON.stringify(response));
+                const { data } = response;
 
                 if (!data.user) {
                     setIsLoading(false);
@@ -72,7 +72,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
                 setIsAuthenticated(true);
 
             } catch (error) {
-                console.log(error);
+                handleErrors(error);
                 setIsLoading(false);
                 setCurrentUser(null);
                 setIsAuthenticated(false);
@@ -90,7 +90,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
                 withCredentials: true
             });
 
-            const { data, status } = JSON.parse(JSON.stringify(response));
+            const { data, status } = response;
 
             if (status >= 400) {
                 console.log(data, status);
@@ -101,16 +101,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
             setIsAuthenticated(true)
 
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                const { errors } = error.response.data;
-
-                errors.forEach((error: { msg: string }) => {
-                    showToastMsg({ msg: error.msg, type: 'error', position: 'bottom-left', autoClose: 8000 });
-                });
-
-            } else {
-                console.log(error);
-            }
+            handleErrors(error);
         }
     }
 
@@ -122,7 +113,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
                 withCredentials: true
             });
 
-            const { data, status } = JSON.parse(JSON.stringify(response));
+            const { data, status } = response;
 
             if (status >= 400) {
                 console.log(data, status);
@@ -133,16 +124,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
             setIsAuthenticated(true);
 
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                const { errors } = error.response.data;
-
-                errors.forEach((error: { msg: string }) => {
-                    showToastMsg({ msg: error.msg, type: 'error', position: 'bottom-left', autoClose: 8000 });
-                });
-
-            } else {
-                console.log(error);
-            }
+            handleErrors(error);
         }
     }
 

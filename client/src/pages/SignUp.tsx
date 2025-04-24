@@ -27,8 +27,7 @@ export default function SignUp() {
             return;
         }
 
-        const response = await authSignUp({ username, firstName, lastName, email, password });
-        console.log(response);
+        await authSignUp({ username, firstName, lastName, email, password });
     }
 
     return (
