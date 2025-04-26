@@ -13,6 +13,7 @@ export default function HeaderMenu() {
     const { currentUser, signOut } = useAuth();
     const navigate = useNavigate();
 
+    //Funcion para manejar el cierre de sesion
     function handleSignOut(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         signOut();

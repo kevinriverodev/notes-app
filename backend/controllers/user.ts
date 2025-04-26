@@ -95,20 +95,16 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
     const { username, firstName, lastName, email, password } = req.body;
-    const { id } = req.params;
 
     if (!req.user) {
         res.status(401).json({ errors: [{ msg: 'Unverified user' }] });
         return;
     }
 
-    const salt = bcrypt.genSaltSync();
-    const hash = bcrypt.hashSync(password, salt);
-
     try {
         const user = await User.findOne({
             where: {
-                id,
+                id: req.user.id,
                 status: true
             }
         });
@@ -118,9 +114,15 @@ export const updateUser = async (req: Request, res: Response) => {
             return;
         }
 
-        await user.update({ username, firstName, lastName, email, password: hash });
+        if (password) {
+            const salt = bcrypt.genSaltSync();
+            const hash = bcrypt.hashSync(password, salt);   
+            await user.update({ username, firstName, lastName, email, password: hash });        
+        } else {
+            await user.update({ username, firstName, lastName, email });        
+        }
 
-        const { password: pass, status, ...data } = user.toJSON();
+        const { password: pass, status, updatedAt, createdAt, ...data } = user.toJSON();
 
         res.status(200).json({ user: data });
 

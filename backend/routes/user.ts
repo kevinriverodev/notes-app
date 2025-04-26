@@ -37,15 +37,14 @@ router.post('/', [
     validateFields
 ], createUser);
 
-router.put('/:id', [
+router.put('/', [
     validateJWT,
-    check('id', 'Invalid id format').isInt(),
-    check('username', 'Invalid username length').trim().isLength({ min:1, max: 50 }),
+    check('username', 'Invalid username length').trim().isLength({ min:1, max: 50 }), 
     check('firstName', 'Invalid first name length').trim().isLength({ min:1, max: 100 }),
     check('lastName', 'Invalid last name length').trim().isLength({ min:1, max: 100 }),
     check('email', 'Invalid email').trim().isEmail(),
     check('email', 'Invalid email length').trim().isLength({ min:1, max: 100 }),
-    check('password', 'Invalid password length').trim().isLength({ min: 6, max: 20 }),
+    check('password', 'Invalid password length').trim().isLength({ min:6, max: 20 }).optional(),
     validateFields
 ], updateUser);
 

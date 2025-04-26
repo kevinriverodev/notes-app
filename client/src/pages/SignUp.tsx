@@ -1,33 +1,29 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { showToastMsg } from '../helpers/show-toast-msg';
 
 export default function SignUp() {
-
-    const [username, setUsername] = useState<string>('');
-    const [firstName, setFirstName] = useState<string>('');
-    const [lastName, setLastName] = useState<string>('');
-    const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
-    const [confirmPassword, setConfirmPassword] = useState<string>('');
     const { authSignUp, isAuthenticated } = useAuth();
-    
     const navigate = useNavigate();
-
+        
+    //Hook para verificar si ya el usuario esta autenticado antes de entrar al login
     useEffect(() => {
         if (isAuthenticated) navigate('/');
     }, [isAuthenticated, navigate]);
 
-    async function handleSignUp(e: FormEvent<HTMLFormElement>) {
-        e.preventDefault();
+    // Funcion para manejar el submit del form y registrar usuario
+    async function handleSignUp(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
 
-        if (password !== confirmPassword) {
+        const { username, firstName, lastName, email, password, confirmPassword } = event.currentTarget;
+
+        if (password.value.trim() !== confirmPassword.value.trim() || !password.value.trim() || !confirmPassword.value.trim()) {
             showToastMsg({ msg:'Passwords dont\'t match', type: 'error', position: 'bottom-left', autoClose: 8000 });
             return;
         }
 
-        await authSignUp({ username, firstName, lastName, email, password });
+        await authSignUp( username.value, firstName.value, lastName.value, email.value, password.value );
     }
 
     return (
@@ -37,17 +33,17 @@ export default function SignUp() {
                 <form action="#" onSubmit={handleSignUp} className="flex flex-col p-7 gap-5 rounded-md bg-[#1A1C28]">
                     <fieldset className="flex flex-col text-[#e2e2e2] gap-y-3">
                         <label className="self-start" htmlFor="username">Username</label>
-                        <input onChange={(e) => setUsername(e.currentTarget.value)} className="w-full h-13 p-5 focus:outline-0 bg-[#1E202D] rounded-sm" type="text" name="username" id="username" placeholder="Username/email" required />
+                        <input className="w-full h-13 p-5 focus:outline-0 bg-[#1E202D] rounded-sm" type="text" name="username" id="username" placeholder="Username/email" required />
                         <label className="self-start" htmlFor="firstName">First name</label>
-                        <input onChange={(e) => setFirstName(e.currentTarget.value)} className="w-full h-13 p-5 focus:outline-0 bg-[#1E202D] rounded-sm" type="text" name="firstName" id="firstName" placeholder="First name" required />
+                        <input className="w-full h-13 p-5 focus:outline-0 bg-[#1E202D] rounded-sm" type="text" name="firstName" id="firstName" placeholder="First name" required />
                         <label className="self-start" htmlFor="username">Last name</label>
-                        <input onChange={(e) => setLastName(e.currentTarget.value)} className="w-full h-13 p-5 focus:outline-0 bg-[#1E202D] rounded-sm" type="text" name="lastName" id="lastName" placeholder="Last name" required />
+                        <input className="w-full h-13 p-5 focus:outline-0 bg-[#1E202D] rounded-sm" type="text" name="lastName" id="lastName" placeholder="Last name" required />
                         <label className="self-start" htmlFor="email">Email</label>
-                        <input onChange={(e) => setEmail(e.currentTarget.value)} className="w-full h-13 p-5 focus:outline-0 bg-[#1E202D] rounded-sm" type="email" name="email" id="email" placeholder="Email" required />
+                        <input className="w-full h-13 p-5 focus:outline-0 bg-[#1E202D] rounded-sm" type="email" name="email" id="email" placeholder="Email" required />
                         <label className="self-start" htmlFor="password">Password</label>
-                        <input onChange={(e) => setPassword(e.currentTarget.value)} className="w-full h-13 p-5 focus:outline-0 bg-[#1E202D] rounded-sm" type="password" name="password" id="password" placeholder="Password" required />
+                        <input className="w-full h-13 p-5 focus:outline-0 bg-[#1E202D] rounded-sm" type="password" name="password" id="password" placeholder="Password" required />
                         <label className="self-start" htmlFor="ConfirmPassword">Confirm password</label>
-                        <input onChange={(e) => setConfirmPassword(e.currentTarget.value)} className="w-full h-13 p-5 focus:outline-0 bg-[#1E202D] rounded-sm" type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm password" required />
+                        <input className="w-full h-13 p-5 focus:outline-0 bg-[#1E202D] rounded-sm" type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm password" required />
                     </fieldset>
                     <button type="submit" className="mx-auto justify-center w-20 h-12 text-white font-semibold rounded-lg bg-[#21A945] hover:cursor-pointer hover:bg-[#1d8f3b]">
                         <span className="align-middle">Sign up</span>

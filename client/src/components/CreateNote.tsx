@@ -1,7 +1,5 @@
 import { useState, FormEvent } from 'react';
-import axios from 'axios';
-import { handleErrors } from '../helpers/handle-errors';
-import { ToastMsgProps } from '../helpers/show-toast-msg';
+import { createNote } from '../api/note';
 import Modal from './Modal';
 import { NoteObj } from '../pages/Home';
 
@@ -10,53 +8,37 @@ interface CreateNoteProps {
     notes: NoteObj[];
     onToggleModal: (isVisible: boolean) => void;
     onCreateNote: (notes: NoteObj[]) => void;
-    onShowMsg: (option: ToastMsgProps) => void;
     onToggleBtn: (isVisible: boolean) => void;
 }
 
-export default function CreateNote({ isVisible, notes, onToggleModal, onCreateNote, onShowMsg, onToggleBtn }: CreateNoteProps) {
+export default function CreateNote({ isVisible, notes, onToggleModal, onCreateNote, onToggleBtn }: CreateNoteProps) {
 
     const [title, setTitle] = useState<string>('');
     const [description, setDescription] = useState<string>('');
 
+    //Funcion para manejar el submit del form y crear nota
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        try {
-            const response = await axios.post('http://localhost:8080/api/notes/', {
-                title,
-                description
-            }, {
-                withCredentials: true
-            });
+        const note = await createNote(title, description);
 
-            const { data, status } = response;
+        if (!note) return;
 
-            if (status >= 400) {
-                console.log(data, status);
-                return;
-            }
+        onCreateNote(
+            [
+                {
+                    id: note.id,
+                    title: note.title,
+                    description: note.description
+                },
+                ...notes
+            ]
+        );
 
-            onCreateNote(
-                [
-                    {
-                        id: data.id,
-                        title: data.title,
-                        description: data.description
-                    },
-                    ...notes
-                ]
-            );
-
-            onToggleModal(false);
-            onToggleBtn(true);
-            onShowMsg({ msg: 'Note successfully created', type: 'success', position: 'bottom-left', autoClose: 4000 });
-            setTitle('');
-            setDescription('');
-
-        } catch (error) {
-            handleErrors(error);
-        }
+        onToggleModal(false);
+        onToggleBtn(true);
+        setTitle('');
+        setDescription('');
     }
 
     return (

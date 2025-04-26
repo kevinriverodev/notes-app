@@ -8,13 +8,8 @@ export interface ToastMsgProps {
   theme?: string;
 }
 
-export function showToastMsg({
-    msg,
-    type,
-    position,
-    autoClose,
-    theme,
-}: ToastMsgProps) {
+//Funcion para mostrar mensajes al usuario 
+export function showToastMsg({ msg, type, position, autoClose, theme }: ToastMsgProps) {
     switch (type) {
         case 'success':
             toast.success(msg, { type, position, autoClose, theme: theme || 'light', });

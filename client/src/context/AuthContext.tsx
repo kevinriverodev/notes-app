@@ -1,16 +1,13 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import axios from 'axios';
 import Cookies from 'js-cookie'
 import { ToastContainer } from 'react-toastify';
-import { handleErrors } from '../helpers/handle-errors';
+import { signin, signup, validateCookie } from '../api/user';
 
 interface user {
     username: string;
     firstName: string;
     lastName: string;
     email: string;
-    role?: string;
-    password?: string;
 }
 
 interface AuthProviderProps {
@@ -19,8 +16,9 @@ interface AuthProviderProps {
 
 interface authContextProps {
     authSignIn: (username: string, password: string) => Promise<void>;
-    authSignUp: (user: user) => Promise<void>;
+    authSignUp: (username: string, firstName: string, lastName: string, email: string, password: string) => Promise<void>;
     signOut: () => void;
+    setCurrentUser: (user: user) => void;
     currentUser: user | null;
     isAuthenticated: boolean;
     isLoading: boolean;
@@ -29,7 +27,6 @@ interface authContextProps {
 const AuthContext = createContext<authContextProps | null>(null);
 
 export function useAuth() {
-
     const context = useContext(AuthContext);
 
     if (!context) throw new Error('useAuth must be used within an AuthProvider');
@@ -43,8 +40,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    useEffect(() => { // Funcion para valida si hay una cookie con el token cada vez que recargue la pagina
-        async function validateCookie() {
+    useEffect(() => { // Funcion para validar si hay una cookie con el token de acceso cada vez que recargue la pagina
+        async function authCookie() {
             const token = Cookies.get('token');
 
             if (!token) {
@@ -54,80 +51,42 @@ export default function AuthProvider({ children }: AuthProviderProps) {
                 return;
             }
 
-            try {
-                const response = await axios.get('http://localhost:8080/api/auth/validate-cookie', {
-                    withCredentials: true
-                });
+            const user = await validateCookie();
 
-                const { data } = response;
-
-                if (!data.user) {
-                    setIsLoading(false);
-                    setCurrentUser(null);
-                    setIsAuthenticated(false);
-                    return;
-                }
-
-                setCurrentUser(data.user);
-                setIsAuthenticated(true);
-
-            } catch (error) {
-                handleErrors(error);
+            if (!user) {
                 setIsLoading(false);
                 setCurrentUser(null);
                 setIsAuthenticated(false);
+                return;
             }
+
+            setCurrentUser(user);
+            setIsAuthenticated(true);
         }
-        validateCookie();
+        authCookie();
     }, []);
 
+    //Funcion para validar login y generar los estados de acceso accesibles en toda la app
     async function authSignIn(username: string, password: string) {
-        try {
-            const response = await axios.post('http://localhost:8080/api/auth/signin', {
-                username,
-                password
-            }, {
-                withCredentials: true
-            });
+        const user = await signin(username, password);
+        
+        if (!user) return;
 
-            const { data, status } = response;
-
-            if (status >= 400) {
-                console.log(data, status);
-                return;
-            }
-
-            setCurrentUser(data.user);
-            setIsAuthenticated(true)
-
-        } catch (error) {
-            handleErrors(error);
-        }
+        setCurrentUser(user);
+        setIsAuthenticated(true);
     }
 
-    async function authSignUp({ username, firstName, lastName, email, password }: user) {
-        try {
-            const response = await axios.post('http://localhost:8080/api/auth/signup', {
-                username, firstName, lastName, email, password
-            }, {
-                withCredentials: true
-            });
+    //Funcion para validar el registro y generar los estados de acceso accesibles en toda la app
+    async function authSignUp(username: string, firstName: string, lastName: string, email: string, password: string) {
+        const user = await signup(username, firstName, lastName, email, password);
 
-            const { data, status } = response;
+        if (!user) return;
 
-            if (status >= 400) {
-                console.log(data, status);
-                return;
-            }
-
-            setCurrentUser(data.user);
-            setIsAuthenticated(true);
-
-        } catch (error) {
-            handleErrors(error);
-        }
+        setCurrentUser(user);
+        setIsAuthenticated(true);
     }
 
+    //Funcion para remover los estados y cookie de acceso existentes
     function signOut() {
         Cookies.remove('token');
         setCurrentUser(null);
@@ -136,7 +95,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     }
 
     return (
-        <AuthContext.Provider value={{ authSignIn, authSignUp, signOut, currentUser, isAuthenticated, isLoading }}>
+        <AuthContext.Provider value={{ authSignIn, authSignUp, signOut, currentUser, isAuthenticated, isLoading, setCurrentUser }}>
             <ToastContainer />
             {children}
         </AuthContext.Provider>

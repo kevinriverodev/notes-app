@@ -1,12 +1,10 @@
 import { FormEvent, useState } from 'react';
-import axios from 'axios';
 import { FaPenToSquare } from 'react-icons/fa6';
 import { FaFloppyDisk } from 'react-icons/fa6';
 import { FaTrash } from 'react-icons/fa6';
-import { handleErrors } from '../helpers/handle-errors';
-import { ToastMsgProps } from '../helpers/show-toast-msg';
 import { NoteObj } from '../pages/Home';
 import Modal from './Modal'
+import { deleteNote, updateNote } from '../api/note';
 
 interface NoteDetailsProps {
     isVisible: boolean;
@@ -14,78 +12,53 @@ interface NoteDetailsProps {
     notes: NoteObj[];
     onToggleModal: (isVisible: boolean) => void;
     onChangeNote: (notes: NoteObj[]) => void;
-    onShowMsg: (options: ToastMsgProps) => void;
     onToggleBtn: (isVisible: boolean) => void;
 }
 
-export default function NoteDetails({ isVisible, note, notes, onChangeNote, onToggleModal, onShowMsg, onToggleBtn }: NoteDetailsProps) {
+export default function NoteDetails({ isVisible, note, notes, onChangeNote, onToggleModal, onToggleBtn }: NoteDetailsProps) {
 
     const [isReadOnly, setIsReadOnly] = useState<boolean>(true);
     const [title, setTitle] = useState<string>('');
     const [description, setDescription] = useState<string>('');
 
+    //Funcion para manejar el submit del form y eliminar nota
     async function handleDeleteNote() {
-        try {
-            const response = await axios.delete(`http://localhost:8080/api/notes/${note.id}`, {
-                withCredentials: true
-            });
+        const deletedNote = await deleteNote(note.id);
 
-            const { data, status } = response;
+        if (!deletedNote) return;
 
-            if (status >= 400) {
-                console.log(data, status);
-                return;
-            }
+        const filteredNotes = notes.filter((note) => note.id !== deletedNote.id);
 
-            const filteredNotes = notes.filter((note) => note.id !== data?.id);
+        onChangeNote([
+            ...filteredNotes
+        ]);
 
-            onChangeNote([
-                ...filteredNotes
-            ]);
-
-            onToggleModal(false);
-            onToggleBtn(true);
-            onShowMsg({ msg: 'Note successfully deleted', type: 'success', position: 'bottom-left', autoClose: 4000 });
-
-        } catch (error) {
-            handleErrors(error);
-        }
+        onToggleModal(false);
+        onToggleBtn(true);
     }
 
+    //Funcion para manejar el submit del form y editar nota
     async function handleUpdateNote(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        try {
-            const response = await axios.put(`http://localhost:8080/api/notes/${note.id}`, {
-                title,
-                description
-            }, {
-                withCredentials: true
-            });
+        const updatedNote = await updateNote(note.id, title, description);
 
-            const { data } = response;
+        const updatedNotes = notes.map(noteobj => {
+            if (noteobj.id === note.id) {
+                return {
+                    ...noteobj,
+                    title: updatedNote.title,
+                    description: updatedNote.description
+                };
+            } else {
+                return noteobj;
+            }
+        });
 
-            const updatedNotes = notes.map(noteobj => {
-                if (noteobj.id === note.id) {
-                    return {
-                        ...noteobj,
-                        title: data.title,
-                        description: data.description
-                    };
-                } else {
-                    return noteobj;
-                }
-            });
-
-            onChangeNote(updatedNotes);
-            setIsReadOnly(true);
-            onToggleModal(false);
-            onToggleBtn(true);
-            onShowMsg({ msg: 'Note successfully updated', type: 'success', position: 'bottom-left', autoClose: 4000 });
-
-        } catch (error) {
-            handleErrors(error);
-        }
+        onChangeNote(updatedNotes);
+        setIsReadOnly(true);
+        onToggleModal(false);
+        onToggleBtn(true);
     }
 
     return (

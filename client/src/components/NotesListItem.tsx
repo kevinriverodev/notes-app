@@ -9,6 +9,7 @@ interface NoteListItemProps {
 
 export default function NoteListItem({ note, onToggleModal, onSelectNote, onToggleBtn }: NoteListItemProps) {
 
+    //Funcion para rellenar el form de editar nota a partir de la nota seleccionada por el usuario
     function handleFillDetailsForm() {
         onSelectNote(note);
         onToggleModal(true);

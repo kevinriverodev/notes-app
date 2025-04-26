@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { showToastMsg } from './show-toast-msg';
 
+//Funcion para manejar en el catch los errores recibidos del backend
 export function handleErrors(error: unknown) {
     if (axios.isAxiosError(error) && error.response?.data.errors) {
         const { errors } = error.response.data;

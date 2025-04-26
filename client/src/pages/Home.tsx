@@ -1,9 +1,6 @@
 import { useEffect, useState, KeyboardEvent } from 'react';
-import axios from 'axios';
 import { FaFileCirclePlus } from 'react-icons/fa6';
-import { handleErrors } from '../helpers/handle-errors';
-import { showToastMsg } from '../helpers/show-toast-msg';
-import Main from '../components/Main'
+import Main from '../components/Main';
 import MainHeader from '../components/MainHeader'
 import Sidebar from '../components/Sidebar'
 import NotesList from '../components/NotesList';
@@ -12,6 +9,7 @@ import CreateNote from '../components/CreateNote';
 import NoteDetails from '../components/NoteDetails';
 import Note from '../components/Note';
 import { useAuth } from '../context/AuthContext';
+import { getNotes, searchNotesByQuery } from '../api/note';
 
 import './Home.css';
 
@@ -37,25 +35,13 @@ export default function Home() {
 
             if (!isAuthenticated) return;
 
-            try {
-                const response = await axios.get('http://localhost:8080/api/notes', {
-                    withCredentials: true
-                });
+            const userNotes = await getNotes();
 
-                const { data, status } = response;
+            if (!userNotes) return;
 
-                if (status >= 400) {
-                    console.log(data, status);
-                    return;
-                }
-
-                setNotes([
-                    ...data.rows.map((note: NoteObj) => ({ id: note.id, title: note.title, description: note.description }))
-                ]);
-
-            } catch (error) {
-                handleErrors(error);
-            }
+            setNotes([
+                ...userNotes.rows.map((note: NoteObj) => ({ id: note.id, title: note.title, description: note.description }))
+            ]);
         }
         fetchNotes();
     }, [isAuthenticated]);
@@ -64,26 +50,19 @@ export default function Home() {
     async function searchNotes(event: KeyboardEvent<HTMLInputElement>) {
         const query = event.currentTarget.value;
 
-        try {
-            const response = await axios.get(`http://localhost:8080/api/notes?query=${query}`, {
-                withCredentials: true
-            });
+        const queryNotes = await searchNotesByQuery(query);
 
-            const { data } = response;
+        if (!queryNotes) return;
 
-            setNotes([
-                ...data.rows.map((note: NoteObj) => ({ id: note.id, title: note.title, description: note.description }))
-            ]);
-
-        } catch (error) {
-            handleErrors(error);
-        }
+        setNotes([
+            ...queryNotes.rows.map((note: NoteObj) => ({ id: note.id, title: note.title, description: note.description }))
+        ]);
     }
 
     return (
         <div className="h-dvh flex flex-col justify-center">
-            <CreateNote onToggleBtn={setIsCreateBtnVisible} onShowMsg={showToastMsg} notes={notes} onCreateNote={setNotes} onToggleModal={setIsCreateModalVisible} isVisible={isCreateModalVisible} />
-            <NoteDetails onToggleBtn={setIsCreateBtnVisible} onShowMsg={showToastMsg} notes={notes} onChangeNote={setNotes} note={noteSelected} onToggleModal={setIsDetailsModalVisible} isVisible={isDetailsModalVisible} />
+            <CreateNote onToggleBtn={setIsCreateBtnVisible} notes={notes} onCreateNote={setNotes} onToggleModal={setIsCreateModalVisible} isVisible={isCreateModalVisible} />
+            <NoteDetails onToggleBtn={setIsCreateBtnVisible} notes={notes} onChangeNote={setNotes} note={noteSelected} onToggleModal={setIsDetailsModalVisible} isVisible={isDetailsModalVisible} />
             <MainHeader />
             <div className="flex flex-row w-full h-9/10">
                 <Sidebar>
@@ -96,7 +75,7 @@ export default function Home() {
                             notes.map((note: NoteObj) => (
                                 <Note onToggleBtn={setIsCreateBtnVisible} onSelectNote={setNoteSelected} onTogglemodal={setIsDetailsModalVisible} key={note.id} noteId={note.id} title={note.title} description={note.description} />
                             ))
-                        :   (
+                            : (
                                 <p className="text-[#e2e2e2] mt-10 font-bold text-2xl">No notes found</p>
                             )
                         }
