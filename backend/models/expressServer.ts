@@ -1,4 +1,4 @@
-import express, { Application, Router } from 'express';
+import express, { Application, RequestHandler, Router } from 'express';
 
 class ExpressServer {
     private app: Application;
@@ -13,13 +13,13 @@ class ExpressServer {
         this.app.use(express.static(path));
     }
 
-    setMiddleware(middleware: Function) {
-        this.app.use(middleware());
+    setMiddleware(middleware: RequestHandler) {
+        this.app.use(middleware);
     }
 
-    setMiddlewares(middlewares: Function[]) {
+    setMiddlewares(middlewares: RequestHandler[]) {
         middlewares.forEach(middleware => {
-            this.app.use(middleware());
+            this.app.use(middleware);
         });
     }
 

@@ -1,8 +1,7 @@
 import dotenv from 'dotenv';
-
 import server from './config/server-config';
 
-const main = async () => {
+const main = () => {
     dotenv.config();
 
     server.listen();
