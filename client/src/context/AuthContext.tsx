@@ -1,9 +1,9 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import Cookies from 'js-cookie'
 import { ToastContainer } from 'react-toastify';
-import { signin, signup, validateCookie } from '../api/user';
+import { signin, signup, validateCookie } from '../api/auth';
 
-interface user {
+interface User {
     username: string;
     firstName: string;
     lastName: string;
@@ -14,17 +14,17 @@ interface AuthProviderProps {
     children: ReactNode;
 }
 
-interface authContextProps {
+interface AuthContextProps {
     authSignIn: (username: string, password: string) => Promise<void>;
     authSignUp: (username: string, firstName: string, lastName: string, email: string, password: string) => Promise<void>;
     signOut: () => void;
-    setCurrentUser: (user: user) => void;
-    currentUser: user | null;
+    setCurrentUser: (user: User) => void;
+    currentUser: User | null;
     isAuthenticated: boolean;
     isLoading: boolean;
 }
 
-const AuthContext = createContext<authContextProps | null>(null);
+const AuthContext = createContext<AuthContextProps | null>(null);
 
 export function useAuth() {
     const context = useContext(AuthContext);
@@ -36,7 +36,7 @@ export function useAuth() {
 
 export default function AuthProvider({ children }: AuthProviderProps) {
 
-    const [currentUser, setCurrentUser] = useState<user | null>(null);
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -69,7 +69,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     //Funcion para validar login y generar los estados de acceso accesibles en toda la app
     async function authSignIn(username: string, password: string) {
         const user = await signin(username, password);
-        
+
         if (!user) return;
 
         setCurrentUser(user);
