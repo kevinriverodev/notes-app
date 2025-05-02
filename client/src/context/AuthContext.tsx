@@ -1,9 +1,10 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import Cookies from 'js-cookie'
 import { ToastContainer } from 'react-toastify';
 import { signin, signup, validateCookie } from '../api/auth';
+import { AuthContext } from '../hooks/useAuth';
 
-interface User {
+export interface User {
     username: string;
     firstName: string;
     lastName: string;
@@ -12,26 +13,6 @@ interface User {
 
 interface AuthProviderProps {
     children: ReactNode;
-}
-
-interface AuthContextProps {
-    authSignIn: (username: string, password: string) => Promise<void>;
-    authSignUp: (username: string, firstName: string, lastName: string, email: string, password: string) => Promise<void>;
-    signOut: () => void;
-    setCurrentUser: (user: User) => void;
-    currentUser: User | null;
-    isAuthenticated: boolean;
-    isLoading: boolean;
-}
-
-const AuthContext = createContext<AuthContextProps | null>(null);
-
-export function useAuth() {
-    const context = useContext(AuthContext);
-
-    if (!context) throw new Error('useAuth must be used within an AuthProvider');
-
-    return context;
 }
 
 export default function AuthProvider({ children }: AuthProviderProps) {

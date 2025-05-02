@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import MainHeader from '../components/MainHeader';
 import { updateUser } from '../api/user';
 

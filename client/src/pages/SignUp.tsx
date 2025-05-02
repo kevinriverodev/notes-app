@@ -1,6 +1,6 @@
 import { FormEvent, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { showToastMsg } from '../helpers/show-toast-msg';
 
 export default function SignUp() {

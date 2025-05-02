@@ -1,7 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { FormEvent } from 'react';
-
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { FaUser } from 'react-icons/fa';
 import { FaAngleDown } from 'react-icons/fa6';

@@ -1,5 +1,6 @@
 import { useEffect, useState, KeyboardEvent } from 'react';
 import { FaFileCirclePlus } from 'react-icons/fa6';
+import { useAuth } from '../hooks/useAuth';
 import Main from '../components/Main';
 import MainHeader from '../components/MainHeader'
 import Sidebar from '../components/Sidebar'
@@ -8,7 +9,6 @@ import SearchInput from '../components/SearchInput';
 import CreateNote from '../components/CreateNote';
 import NoteDetails from '../components/NoteDetails';
 import Note from '../components/Note';
-import { useAuth } from '../context/AuthContext';
 import { getNotes, searchNotesByQuery } from '../api/note';
 
 import './Home.css';
