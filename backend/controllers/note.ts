@@ -1,177 +1,177 @@
-import { Request, Response } from 'express';
-import { Op } from 'sequelize';
+import { Request, Response } from "express";
+import { Op } from "sequelize";
+import Note from "../models/note";
 
-import Note from '../models/note';
+export const getUserNotes = async (req: Request, res: Response) => {
+	const { query } = req.query;
 
-export const getUserNotes = async (req: Request, res: Response) => { 
-    const { query } = req.query;
+	if (!req.user) {
+		res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+		return;
+	}
 
-    if (!req.user) {
-        res.status(401).json({ errors: [{ msg: 'Unverified user' }] });
-        return;
-    }
+	try {
+		if (query) {
+			const notes = await Note.findAndCountAll({
+				where: {
+					[Op.or]: [
+						{
+							title: {
+								[Op.like]: `%${query}%`,
+							},
+						},
+						{
+							description: {
+								[Op.like]: `%${query}%`,
+							},
+						},
+					],
+					[Op.and]: [{ userId: req.user.id }, { status: true }],
+				},
+				order: [["updatedAt", "DESC"]],
+			});
 
-    try {
-        if (query) {
-            const notes = await Note.findAndCountAll({
-                where: {
-                    [Op.or]: [
-                        {
-                          title: {
-                            [Op.like]: `%${query}%` },
-                        },
-                        {
-                          description: {
-                            [Op.like]: `%${query}%`  
-                          }
-                        }
-                    ],
-                    [Op.and]: [{ userId: req.user.id, }, { status: true }]
-                },
-                order: [
-                    ['updatedAt', 'DESC']
-                ]
-            });
+			if (!notes) {
+				res.status(400).json({ errors: [{ msg: "No notes found" }] });
+				return;
+			}
 
-            if (!notes) {
-                res.status(400).json({ errors: [{ msg: 'No notes found' }] });
-                return;
-            }
-    
-            res.status(200).json(notes);
+			res.status(200).json(notes);
+		} else {
+			const notes = await Note.findAndCountAll({
+				where: {
+					userId: req.user.id,
+					status: true,
+				},
+				order: [["updatedAt", "DESC"]],
+			});
 
-        } else {
-            const notes = await Note.findAndCountAll({
-                where: {
-                    userId: req.user.id,
-                    status: true
-                },
-                order: [
-                    ['updatedAt', 'DESC']
-                ]
-            });
+			if (!notes) {
+				res.status(400).json({ errors: [{ msg: "No notes found" }] });
+				return;
+			}
 
-            if (!notes) {
-                res.status(400).json({ errors: [{ msg: 'No notes found' }] });
-                return;
-            }
-    
-            res.status(200).json(notes);
-        }
-    } catch (error: unknown) {
-        res.status(500).json(error);
-    }
-}
+			res.status(200).json(notes);
+		}
+	} catch (error: unknown) {
+		res.status(500).json(error);
+	}
+};
 
 export const getNoteById = async (req: Request, res: Response) => {
-    const { id } = req.params;
+	const { id } = req.params;
 
-    if (!req.user) {
-        res.status(401).json({ errors: [{ msg: 'Unverified user' }] });
-        return;
-    }
+	if (!req.user) {
+		res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+		return;
+	}
 
-    try {
-        const note = await Note.findOne({
-            where: {
-                id,
-                userId: req.user.id,
-                status: true
-            }
-        });
+	try {
+		const note = await Note.findOne({
+			where: {
+				id,
+				userId: req.user.id,
+				status: true,
+			},
+		});
 
-        if (!note) {
-            res.status(400).json({ errors: [{ msg: 'No note found' }] });
-            return;
-        }
+		if (!note) {
+			res.status(400).json({ errors: [{ msg: "No note found" }] });
+			return;
+		}
 
-        res.status(200).json(note);
+		res.status(200).json(note);
 
-    } catch (error: unknown) {
-        res.status(500).json(error);
-    }
-}
+	} catch (error: unknown) {
+		res.status(500).json(error);
+	}
+};
 
 export const createNote = async (req: Request, res: Response) => {
-    const { title, description } = req.body;
+	const { title, description } = req.body;
 
-    if (!req.user) {
-        res.status(401).json({ errors: [{ msg: 'Unverified user' }] });
-        return;
-    }
+	if (!req.user) {
+		res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+		return;
+	}
 
-    try {
-        const note = await Note.create({ title, description, status: true, userId: req.user.id });
+	try {
+		const note = await Note.create({
+			title,
+			description,
+			status: true,
+			userId: req.user.id,
+		});
 
-        if (!note) {
-            res.status(400).json({ errors: [{ msg: 'Error creating note' }] });
-            return;
-        }
+		if (!note) {
+			res.status(400).json({ errors: [{ msg: "Error creating note" }] });
+			return;
+		}
 
-        res.status(201).json(note);
-        
-    } catch (error: unknown) {
-        res.status(500).json(error);
-    }
-}
+		res.status(201).json(note);
+    
+	} catch (error: unknown) {
+		res.status(500).json(error);
+	}
+};
 
 export const updateNote = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { title, description } = req.body;
+	const { id } = req.params;
+	const { title, description } = req.body;
 
-    if (!req.user) {
-        res.status(401).json({ errors: [{ msg: 'Unverified user' }] });
-        return;
-    }
+	if (!req.user) {
+		res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+		return;
+	}
 
-    try {
-        const note = await Note.findOne({
-            where: {
-                id,
-                userId: req.user.id
-            }
-        });
+	try {
+		const note = await Note.findOne({
+			where: {
+				id,
+				userId: req.user.id,
+			},
+		});
 
-        if (!note) {
-            res.status(400).json({ errors: [{ msg: 'No note found' }] });
-            return;
-        }
+		if (!note) {
+			res.status(400).json({ errors: [{ msg: "No note found" }] });
+			return;
+		}
 
-        await note.update({ title, description });
+		await note.update({ title, description });
 
-        res.status(200).json(note);
-    
-    } catch (error: unknown) {
-        res.status(500).json(error);
-    }
-}
+		res.status(200).json(note);
+
+	} catch (error: unknown) {
+		res.status(500).json(error);
+	}
+};
 
 export const deleteNote = async (req: Request, res: Response) => {
-    const { id } = req.params;
+	const { id } = req.params;
 
-    if (!req.user) {
-        res.status(401).json({ errors: [{ msg: 'Unverified user' }] });
-        return;
-    }
+	if (!req.user) {
+		res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+		return;
+	}
 
-    try {
-        const note = await Note.findOne({
-            where: {
-                id,
-                userId: req.user.id
-            }
-        });
+	try {
+		const note = await Note.findOne({
+			where: {
+				id,
+				userId: req.user.id,
+			},
+		});
 
-        if (!note) {
-            res.status(400).json({ errors: [{ msg: 'No note found' }] });
-            return;
-        }
+		if (!note) {
+			res.status(400).json({ errors: [{ msg: "No note found" }] });
+			return;
+		}
 
-        await note.update({ status: false });
+		await note.update({ status: false });
 
-        res.status(200).json(note);
-    
-    } catch (error: unknown) {
-        res.status(500).json(error);
-    }
-}
+		res.status(200).json(note);
+
+	} catch (error: unknown) {
+		res.status(500).json(error);
+	}
+};

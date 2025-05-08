@@ -4,16 +4,16 @@ DROP TABLE IF EXISTS `notesapp`.`notes`;
 DROP TABLE IF EXISTS `notesapp`.`users`;
 
 CREATE TABLE `notesapp`.`users` (
-    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-    `username` VARCHAR(50) NOT NULL,
-    `firstName` VARCHAR(100) NOT NULL,
-    `lastName` VARCHAR(100) NOT NULL,
-    `email` VARCHAR(100) NOT NULL,
-    `password` VARCHAR(100) NOT NULL,
-    `role` VARCHAR(20) NOT NULL,
-    `status` TINYINT NOT NULL DEFAULT '1',
-    `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+  `username` VARCHAR(50) NOT NULL,
+  `firstName` VARCHAR(100) NOT NULL,
+  `lastName` VARCHAR(100) NOT NULL,
+  `email` VARCHAR(100) NOT NULL,
+  `password` VARCHAR(100) NOT NULL,
+  `role` VARCHAR(20) NOT NULL,
+  `status` TINYINT NOT NULL DEFAULT '1',
+  `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 INSERT INTO `users` (`id`, `username`, `firstName`, `lastName`, `email`, `password`, `role`, `status`, `createdAt`, `updatedAt`) VALUES
@@ -21,14 +21,14 @@ INSERT INTO `users` (`id`, `username`, `firstName`, `lastName`, `email`, `passwo
 (2, 'usertest2', 'User', 'Test2', 'usertest2@gmail.com', '$2b$10$pqQ5mPBy/yICL3FuOEltyO/NfZOtZ2kV23T5FE.5sWaDyUv173mSS', 'USER', 1, '2025-04-12 04:30:18', '2025-04-12 04:30:18');
 
 CREATE TABLE `notesapp`.`notes` (
-    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-    `title` VARCHAR(255) NOT NULL,
-    `description` TEXT NOT NULL,
-    `status` TINYINT NOT NULL DEFAULT '1',
-    `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `userId`  bigint(20) NOT NULL,
-    FOREIGN KEY (`userId`) REFERENCES `notesapp`.`users` (`id`)
+  `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+  `title` VARCHAR(255) NOT NULL,
+  `description` TEXT NOT NULL,
+  `status` TINYINT NOT NULL DEFAULT '1',
+  `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `userId`  bigint(20) NOT NULL,
+  FOREIGN KEY (`userId`) REFERENCES `notesapp`.`users` (`id`)
 );
 
 INSERT INTO `notes` (`id`, `title`, `description`, `status`, `createdAt`, `updatedAt`, `userId`) VALUES 

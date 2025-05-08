@@ -16,16 +16,18 @@ export async function updateUser(username: string, firstName: string, lastName: 
 	}
 
 	try {
-		const response = await axios.put("http://localhost:8080/api/users", {
+		const response = await axios.put(
+			"http://localhost:8080/api/users",
+			{
 				username,
 				firstName,
 				lastName,
 				email,
 				password: password ? password : undefined,
 			},
-			{ 
-                withCredentials: true 
-            }
+			{
+				withCredentials: true,
+			}
 		);
 
 		const { data, status } = response;
@@ -43,7 +45,7 @@ export async function updateUser(username: string, firstName: string, lastName: 
 		});
 
 		return data.user;
-        
+
 	} catch (error) {
 		handleErrors(error);
 	}
