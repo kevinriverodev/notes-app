@@ -27,10 +27,10 @@ export default function SignUp() {
   }
 
   return (
-    <div className="h-dvh w-full flex flex-row justify-center text-center text-[#e2e2e2] bg-[#1E202D]">
-      <div className="flex flex-col justify-center self-center gap-y-5 mt-[-50px] h-auto w-1/4 min-w-80">
+    <div className="h-dvh w-full flex flex-row py-[50px] justify-center text-center text-[#e2e2e2] bg-[#1E202D]">
+      <div className="flex flex-col justify-center gap-y-10 h-auto w-3/4 max-w-[500px]">
         <h1 className="font-extrabold text-4xl">Sign up</h1>
-        <form action="#" onSubmit={handleSignUp} className="flex flex-col p-7 gap-5 rounded-md bg-[#1A1C28]">
+        <form action="#" onSubmit={handleSignUp} className="flex flex-col w-full p-7 gap-5 rounded-md bg-[#1A1C28]">
           <fieldset className="flex flex-col text-[#e2e2e2] gap-y-3">
             <label className="self-start" htmlFor="username">Username</label>
             <input className="w-full h-13 p-5 focus:outline-0 bg-[#1E202D] rounded-sm" type="text" name="username" id="username" placeholder="Username/email" required />
