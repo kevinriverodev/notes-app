@@ -1,14 +1,15 @@
 import { Request, Response } from "express";
+import { sendError } from "../helpers/response";
 
 export const isValidRole = (role: string) => {
 	return (req: Request, res: Response, next: Function) => {
 		if (!req.user) {
-			res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+			sendError(res, "Unverified user", 401);
 			return;
 		}
 
 		if (req.user.role !== role) {
-			res.status(401).json({ errors: [{ msg: "Not authorized for this functionality" }] });
+			sendError(res, "You don't have permission to access this feature", 401);
 			return;
 		}
 
@@ -19,12 +20,12 @@ export const isValidRole = (role: string) => {
 export const roleExist = (roles: string[]) => {
 	return (req: Request, res: Response, next: Function) => {
 		if (!req.user) {
-			res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+			sendError(res, "Unverified user", 401);
 			return;
 		}
 
 		if (!roles.includes(req.body.role)) {
-			res.status(401).json({ errors: [{ msg: "Invalid role" }] });
+			sendError(res, "Invalid role", 401);
 			return;
 		}
 

@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
 import { Op } from "sequelize";
 import Note from "../models/note";
+import { sendError, sendSuccess } from "../helpers/response";
 
 export const getUserNotes = async (req: Request, res: Response) => {
 	const { query } = req.query;
 
 	if (!req.user) {
-		res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+		sendError(res, "Unverified user", 401);
 		return;
 	}
 
@@ -32,11 +33,12 @@ export const getUserNotes = async (req: Request, res: Response) => {
 			});
 
 			if (!notes) {
-				res.status(400).json({ errors: [{ msg: "No notes found" }] });
+				sendError(res, "No notes found", 400);
 				return;
 			}
 
-			res.status(200).json(notes);
+			sendSuccess(res, notes, 200);
+			return;
 		} else {
 			const notes = await Note.findAndCountAll({
 				where: {
@@ -47,14 +49,17 @@ export const getUserNotes = async (req: Request, res: Response) => {
 			});
 
 			if (!notes) {
-				res.status(400).json({ errors: [{ msg: "No notes found" }] });
+				sendError(res, "No notes found", 400);
 				return;
 			}
 
-			res.status(200).json(notes);
+			sendSuccess(res, notes, 200);
+			return;
 		}
 	} catch (error: unknown) {
-		res.status(500).json(error);
+		console.log("Server error: ", error);
+		sendError(res, "An unexpected error occurred", 500);
+		return;
 	}
 };
 
@@ -62,7 +67,7 @@ export const getNoteById = async (req: Request, res: Response) => {
 	const { id } = req.params;
 
 	if (!req.user) {
-		res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+		sendError(res, "Unverified user", 401);
 		return;
 	}
 
@@ -76,14 +81,16 @@ export const getNoteById = async (req: Request, res: Response) => {
 		});
 
 		if (!note) {
-			res.status(400).json({ errors: [{ msg: "No note found" }] });
+			sendError(res, "No note found", 400);
 			return;
 		}
 
-		res.status(200).json(note);
-
+		sendSuccess(res, note, 200);
+		return;
 	} catch (error: unknown) {
-		res.status(500).json(error);
+		console.log("Server error: ", error);
+		sendError(res, "An unexpected error occurred", 500);
+		return;
 	}
 };
 
@@ -91,7 +98,7 @@ export const createNote = async (req: Request, res: Response) => {
 	const { title, description } = req.body;
 
 	if (!req.user) {
-		res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+		sendError(res, "Unverified user", 401);
 		return;
 	}
 
@@ -104,14 +111,16 @@ export const createNote = async (req: Request, res: Response) => {
 		});
 
 		if (!note) {
-			res.status(400).json({ errors: [{ msg: "Error creating note" }] });
+			sendError(res, "Error creating note", 400);
 			return;
 		}
 
-		res.status(201).json(note);
-    
+		sendSuccess(res, note, 201);  
+		return;  
 	} catch (error: unknown) {
-		res.status(500).json(error);
+		console.log("Server error: ", error);
+		sendError(res, "An unexpected error occurred", 500);
+		return;
 	}
 };
 
@@ -120,7 +129,7 @@ export const updateNote = async (req: Request, res: Response) => {
 	const { title, description } = req.body;
 
 	if (!req.user) {
-		res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+		sendError(res, "Unverified user", 401);
 		return;
 	}
 
@@ -133,16 +142,18 @@ export const updateNote = async (req: Request, res: Response) => {
 		});
 
 		if (!note) {
-			res.status(400).json({ errors: [{ msg: "No note found" }] });
+			sendError(res, "No note found", 400);
 			return;
 		}
 
-		await note.update({ title, description });
+		note.update({ title, description });
 
-		res.status(200).json(note);
-
+		sendSuccess(res, note, 200);
+		return;
 	} catch (error: unknown) {
-		res.status(500).json(error);
+		console.log("Server error: ", error);
+		sendError(res, "An unexpected error occurred", 500);
+		return;
 	}
 };
 
@@ -150,7 +161,7 @@ export const deleteNote = async (req: Request, res: Response) => {
 	const { id } = req.params;
 
 	if (!req.user) {
-		res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+		sendError(res, "Unverified user", 401);
 		return;
 	}
 
@@ -163,15 +174,17 @@ export const deleteNote = async (req: Request, res: Response) => {
 		});
 
 		if (!note) {
-			res.status(400).json({ errors: [{ msg: "No note found" }] });
+			sendError(res, "No note found", 400);
 			return;
 		}
 
 		await note.update({ status: false });
 
-		res.status(200).json(note);
-
+		sendSuccess(res, note, 200);
+		return;
 	} catch (error: unknown) {
-		res.status(500).json(error);
+		console.log("Server error: ", error);
+		sendError(res, "An unexpected error occurred", 500);
+		return;
 	}
 };

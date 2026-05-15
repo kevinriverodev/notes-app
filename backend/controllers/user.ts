@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import User from "../models/user";
+import { sendError, sendSuccess } from "../helpers/response";
 
 export const getUsers = async (req: Request, res: Response) => {
 	if (!req.user) {
-		res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+		sendError(res, "Unverified user", 401);
 		return;
 	}
 
@@ -16,7 +17,7 @@ export const getUsers = async (req: Request, res: Response) => {
 		});
 
 		if (!users) {
-			res.status(400).json({ errors: [{ msg: "No users found" }] });
+			sendError(res, "No users found", 400);
 			return;
 		}
 
@@ -26,10 +27,12 @@ export const getUsers = async (req: Request, res: Response) => {
 			return data;
 		});
 
-		res.status(200).json({ count: users.count, users: userData });
-
+		sendSuccess(res, { count: users.count, users: userData }, 200);
+		return;
 	} catch (error: unknown) {
-		res.status(500).json(error);
+		console.log("Server error: ", error);
+		sendError(res, "An unexpected error occurred", 500);
+		return;
 	}
 };
 
@@ -37,7 +40,7 @@ export const getUser = async (req: Request, res: Response) => {
 	const { id } = req.params;
 
 	if (!req.user) {
-		res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+		sendError(res, "Unverified user", 401);
 		return;
 	}
 
@@ -50,16 +53,18 @@ export const getUser = async (req: Request, res: Response) => {
 		});
 
 		if (!user) {
-			res.status(400).json({ errors: [{ msg: "No user found" }] });
+			sendError(res, "No user found", 400);
 			return;
 		}
 
 		const { password, status, ...data } = user.toJSON();
 
-		res.json({ user: data });
-
+		sendSuccess(res, data, 200);
+		return;
 	} catch (error: unknown) {
-		res.status(500).json(error);
+		console.log("Server error: ", error);
+		sendError(res, "An unexpected error occurred", 500);
+		return;
 	}
 };
 
@@ -67,7 +72,7 @@ export const createUser = async (req: Request, res: Response) => {
 	const { username, firstName, lastName, email, password, role } = req.body;
 
 	if (!req.user) {
-		res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+		sendError(res, "Unverified user", 401);
 		return;
 	}
 
@@ -86,16 +91,18 @@ export const createUser = async (req: Request, res: Response) => {
 		});
 
 		if (!user) {
-			res.status(400).json({ errors: [{ msg: "Error registering  user" }] });
+			sendError(res, "Error registering  user", 400);
 			return;
 		}
 
 		const { password: pass, status, ...data } = user.toJSON();
 
-		res.status(201).json({ user: data });
-
+		sendSuccess(res, data, 201);	
+		return;
 	} catch (error: unknown) {
-		res.status(500).json(error);
+		console.log("Server error: ", error);
+		sendError(res, "An unexpected error occurred", 500);
+		return;
 	}
 };
 
@@ -103,7 +110,7 @@ export const updateUser = async (req: Request, res: Response) => {
 	const { username, firstName, lastName, email, password } = req.body;
 
 	if (!req.user) {
-		res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+		sendError(res, "Unverified user", 401);
 		return;
 	}
 
@@ -116,7 +123,7 @@ export const updateUser = async (req: Request, res: Response) => {
 		});
 
 		if (!user) {
-			res.status(400).json({ errors: [{ msg: "No user found" }] });
+			sendError(res, "No user found", 400);
 			return;
 		}
 
@@ -136,10 +143,12 @@ export const updateUser = async (req: Request, res: Response) => {
 
 		const { password: pass, status, updatedAt, createdAt, ...data } = user.toJSON();
 
-		res.status(200).json({ user: data });
-
+		sendSuccess(res, data, 200);
+		return;
 	} catch (error: unknown) {
-		res.status(500).json(error);
+		console.log("Server error: ", error);
+		sendError(res, "An unexpected error occurred", 500);
+		return;
 	}
 };
 
@@ -147,7 +156,7 @@ export const deleteUser = async (req: Request, res: Response) => {
 	const { id } = req.params;
 
 	if (!req.user) {
-		res.status(401).json({ errors: [{ msg: "Unverified user" }] });
+		sendError(res, "Unverified user", 401);
 		return;
 	}
 
@@ -159,7 +168,7 @@ export const deleteUser = async (req: Request, res: Response) => {
 		});
 
 		if (!user) {
-			res.status(400).json({ errors: [{ msg: "No user found" }] });
+			sendError(res, "No user found", 400);
 			return;
 		}
 
@@ -167,9 +176,11 @@ export const deleteUser = async (req: Request, res: Response) => {
 
 		const { password, status, ...data } = user.toJSON();
 
-		res.status(200).json({ user: data });
-
+		sendSuccess(res, data, 200);
+		return;
 	} catch (error: unknown) {
-		res.status(500).json(error);
+		console.log("Server error: ", error);
+		sendError(res, "An unexpected error occurred", 500);
+		return;
 	}
 };

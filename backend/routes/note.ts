@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { check } from "express-validator";
+import validateJWT from "../middlewares/validate-jwt";
+import validateFields from "../middlewares/validate-fields";
 import {
 	createNote,
 	deleteNote,
@@ -7,8 +9,6 @@ import {
 	getUserNotes,
 	updateNote,
 } from "../controllers/note";
-import validateJWT from "../middlewares/validate-jwt";
-import validateFields from "../middlewares/validate-fields";
 
 const router = Router();
 
@@ -18,7 +18,7 @@ router.get(
 	"/:id",
 	[
 		validateJWT,
-		check("id", "Invalid id - Non-numeric id").trim().isInt(),
+		check("id", "Invalid id").trim().isInt(),
 		validateFields,
 	],
 	getNoteById
@@ -39,7 +39,7 @@ router.put(
 	"/:id",
 	[
 		validateJWT,
-		check("id", "Invalid id - Non-numeric id").trim().isInt(),
+		check("id", "Invalid id").trim().isInt(),
 		check("title", "Invalid title length").trim().isLength({ min: 1, max: 255 }),
 		check("description", "Invalid description length").trim().notEmpty(),
 		validateFields,
@@ -51,7 +51,7 @@ router.delete(
 	"/:id",
 	[
 		validateJWT,
-		check("id", "Invalid id - Non-numeric id").trim().isInt(),
+		check("id", "Invalid id").trim().isInt(),
 		validateFields,
 	],
 	deleteNote

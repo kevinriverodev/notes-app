@@ -1,82 +1,45 @@
-import axios from "axios";
-import { handleErrors } from "../helpers/handle-errors";
+import api from "../config/axios";
 
 export async function signin(username: string, password: string) {
-	try {
-		const response = await axios.post(
-			"http://localhost:8080/api/auth/signin",
-			{
-				username,
-				password,
-			},
-			{
-				withCredentials: true,
-			}
-		);
+	const response = await api.post(
+		"/auth/signin",
+		{ username, password }
+	);
 
-		const { data, status } = response;
+	const { data } = response;
 
-		if (status >= 400) {
-			console.log(data, status);
-			return;
-		}
+	if (!data.ok) throw new Error(data.error || "An unexpected error occurred");
 
-		return data.user;
-
-	} catch (error) {
-		handleErrors(error);
-	}
+	return data.data;
 }
 
 export async function signup(username: string, firstName: string, lastName: string, email: string, password: string) {
-	try {
-		const response = await axios.post(
-			"http://localhost:8080/api/auth/signup",
-			{
-				username,
-				firstName,
-				lastName,
-				email,
-				password,
-			},
-			{
-				withCredentials: true,
-			}
-		);
-
-		const { data, status } = response;
-
-		if (status >= 400) {
-			console.log(data, status);
-			return;
+	const response = await api.post(
+		"/auth/signup",
+		{
+			username,
+			firstName,
+			lastName,
+			email,
+			password
 		}
+	);
 
-		return data.user;
+	const { data } = response;
 
-	} catch (error) {
-		handleErrors(error);
-	}
+	if (!data.ok) throw new Error(data.error || "An unexpected error occurred");
+
+	return data.data;
 }
 
 export async function validateCookie() {
-	try {
-		const response = await axios.get(
-			"http://localhost:8080/api/auth/validate-cookie",
-			{
-				withCredentials: true,
-			}
-		);
+	const response = await api.get(
+		"/auth/validate-cookie"
+	);
 
-		const { data, status } = response;
+	const { data } = response;
 
-		if (status >= 400) {
-			console.log(data, status);
-			return;
-		}
+	if (!data.ok) throw new Error(data.error || "An unexpected error occurred");
 
-		return data.user;
-
-	} catch (error) {
-		handleErrors(error);
-	}
+	return data.data;
 }
