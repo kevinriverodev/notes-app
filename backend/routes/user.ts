@@ -1,5 +1,9 @@
 import { Router } from "express";
 import { check } from "express-validator";
+import validateJWT from "../middlewares/validate-jwt";
+import validateFields from "../middlewares/validate-fields";
+import { isValidRole, roleExist } from "../middlewares/validate-role";
+import { emailExist, usernameExist } from "../helpers/database-validations";
 import {
 	createUser,
 	deleteUser,
@@ -7,10 +11,6 @@ import {
 	getUsers,
 	updateUser,
 } from "../controllers/user";
-import validateJWT from "../middlewares/validate-jwt";
-import validateFields from "../middlewares/validate-fields";
-import { isValidRole, roleExist } from "../middlewares/validate-role";
-import { emailExist, usernameExist } from "../helpers/database-validations";
 
 const router = Router();
 
@@ -21,7 +21,7 @@ router.get(
 	[
 		validateJWT,
 		isValidRole("ADMIN"),
-		check("id", "Invalid id format").isInt(),
+		check("id", "Invalid id").isInt(),
 		validateFields,
 	],
 	getUser
@@ -66,7 +66,7 @@ router.delete(
 	[
 		validateJWT,
 		isValidRole("ADMIN"),
-		check("id", "Invalid id format").isInt(),
+		check("id", "Invalid id").isInt(),
 		validateFields,
 	],
 	deleteUser

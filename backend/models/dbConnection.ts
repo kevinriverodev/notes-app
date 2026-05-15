@@ -9,12 +9,12 @@ class DBConection {
 	private sequelize: Sequelize;
 
 	constructor(dbName?: string, user?: string, password?: string, host?: string, dialect?: Dialect) {
-		dbName ? (this.dbName = dbName) : (this.dbName = process.env.DB_NAME || "notesapp");
-		user ? (this.user = user) : (this.user = process.env.DB_USER || "root");
-		password ? (this.password = password) : (this.password = process.env.DB_PASSWORD || "");
-		host ? (this.host = host) : (this.host = process.env.host || "localhost");
-		dialect ? (this.dialect = dialect) : (this.dialect = (process.env.DB_DIALECT as Dialect) || "mysql");
-
+		this.dbName = dbName || process.env.DB_NAME || "notesapp";
+		this.user = user || process.env.DB_USER || "root";
+		this.password = password || process.env.DB_PASSWORD || "";
+		this.host = host || process.env.host || "localhost"
+		this.dialect = dialect || (process.env.DB_DIALECT as Dialect) || "mysql"
+		
 		this.sequelize = new Sequelize(this.dbName, this.user, this.password, {
 			host: this.host,
 			dialect: this.dialect,

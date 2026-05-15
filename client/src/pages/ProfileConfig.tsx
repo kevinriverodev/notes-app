@@ -1,25 +1,22 @@
-import { FormEvent, useState } from "react";
+import { useEffect, useState } from "react";
+import { ActionFunctionArgs, Form, useActionData } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import MainHeader from "../components/MainHeader";
 import { updateUser } from "../api/user";
+import { handleErrors } from "../helpers/handle-errors";
+import { showToastMsg } from "../helpers/show-toast-msg";
+import MainHeader from "../components/MainHeader";
 
 export default function ProfileConfig() {
   const [isBtnDisabled, setIsBtnDisabled] = useState<boolean>(true);
   const { currentUser, setCurrentUser } = useAuth();
+  const actionData = useActionData();
 
-  // Function para manejar el submit del form y actualizar datos del usuario
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const { username, firstName, lastName, email, password, confirmPassword } = event.currentTarget;
-
-    const user = await updateUser(username.value, firstName.value, lastName.value, email.value, password.value, confirmPassword.value);
-
-    if (!user) return;
-
-    setIsBtnDisabled(true);
-    setCurrentUser(user);
-  }
+  useEffect(() => {
+    if (actionData?.ok && actionData?.user) {
+      setCurrentUser(actionData.user);
+      setIsBtnDisabled(true);
+    }
+  }, [actionData, setCurrentUser]);
 
   return (
     <div className="h-dvh flex flex-col">
@@ -27,7 +24,7 @@ export default function ProfileConfig() {
       <div className="flex flex-row w-full h-9/10 md:p-5 justify-center bg-[#1E202D] overflow-auto">
         <div className="flex flex-col mt-[50px] gap-y-10 w-3/4 md:w-2/4">
           <h1 className="font-extrabold text-4xl self-center text-[#e2e2e2]">Account settings</h1>
-          <form action="#" onSubmit={handleSubmit} className="flex flex-col md:flex-row p-7 gap-10 rounded-md bg-[#1A1C28]">
+          <Form method="post" className="flex flex-col md:flex-row p-7 gap-10 rounded-md bg-[#1A1C28]">
             <div className="flex flex-col w-full md:w-1/2 text-[#e2e2e2] gap-y-3">
               <h2 className="font-bold text-2xl">Personal info</h2>
               <div className="w-full h-[2px] bg-[#282A3A]"></div>
@@ -64,9 +61,45 @@ export default function ProfileConfig() {
                 )
               }
             </div>
-          </form>
+          </Form>
         </div>
       </div>
     </div>
   )
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const { username, firstName, lastName, email, password, confirmPassword } = Object.fromEntries(formData) as Record<string, string>;
+
+  if (password.trim() || confirmPassword.trim()) {
+		if (password.trim() !== confirmPassword.trim() || !password.trim() || !confirmPassword.trim()) {
+			showToastMsg({
+				message: "Passwords dont't match",
+				type: "error"
+			});
+			return;
+		}
+	}
+
+  try {
+    const user = await updateUser(username, firstName, lastName, email, password);
+
+    showToastMsg({
+      message: "User successfully updated",
+      type: "success"
+    });
+
+    return {
+      ok: true,
+      user
+    };
+
+  } catch (error) {
+    handleErrors(error);
+    return {
+      ok: false,
+      error: "Error updating profile"
+    }
+  }
 }

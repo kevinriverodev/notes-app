@@ -1,27 +1,19 @@
-import { ToastPosition, toast } from "react-toastify";
+import { ToastPosition, toast, Theme } from "react-toastify";
+
+type ToastType = "success" | "error" | "info" | "warn";
 
 export interface ToastMsgProps {
-	msg: string;
-	type: string;
-	position: ToastPosition;
-	autoClose: number;
-	theme?: string;
+    message: string;
+    type?: ToastType;
+    position?: ToastPosition;
+    autoClose?: number; 
+    theme?: Theme;
 }
 
-//Funcion para mostrar mensajes al usuario
-export function showToastMsg({ msg, type, position, autoClose, theme }: ToastMsgProps) {
-	switch (type) {
-		case "success":
-			toast.success(msg, { type, position, autoClose, theme: theme || "light" });
-			break;
-		case "error":
-			toast.error(msg, { type, position, autoClose, theme: theme || "light" });
-			break;
-		case "info":
-			toast.info(msg, { type, position, autoClose, theme: theme || "light" });
-			break;
-		case "warning":
-			toast.warn(msg, { type, position, autoClose, theme: theme || "light" });
-			break;
-	}
+export function showToastMsg({ message, type = "info", position = "bottom-left", autoClose = 5000, theme = "light" }: ToastMsgProps) {
+    return toast[type](message, {
+        position,
+        autoClose,
+        theme,
+    });
 }

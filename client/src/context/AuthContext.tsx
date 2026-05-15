@@ -1,8 +1,9 @@
 import { ReactNode, useEffect, useState } from "react";
 import Cookies from "js-cookie"
 import { ToastContainer } from "react-toastify";
-import { signin, signup, validateCookie } from "../api/auth";
 import { AuthContext } from "../hooks/useAuth";
+import { signin, signup, validateCookie } from "../api/auth";
+import { handleErrors } from "../helpers/handle-errors";
 
 export interface User {
   username: string;
@@ -16,7 +17,6 @@ interface AuthProviderProps {
 }
 
 export default function AuthProvider({ children }: AuthProviderProps) {
-
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -49,22 +49,28 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
   //Funcion para validar login y generar los estados de acceso accesibles en toda la app
   async function authSignIn(username: string, password: string) {
-    const user = await signin(username, password);
-
-    if (!user) return;
-
-    setCurrentUser(user);
-    setIsAuthenticated(true);
+    try {
+      const user = await signin(username, password);
+  
+      setCurrentUser(user);
+      setIsAuthenticated(true);
+    } catch (error) {
+      handleErrors(error);    
+    }
   }
 
   //Funcion para validar el registro y generar los estados de acceso accesibles en toda la app
   async function authSignUp(username: string, firstName: string, lastName: string, email: string, password: string) {
-    const user = await signup(username, firstName, lastName, email, password);
+    try {
+      const user = await signup(username, firstName, lastName, email, password);
 
-    if (!user) return;
+      if (!user) return;
 
-    setCurrentUser(user);
-    setIsAuthenticated(true);
+      setCurrentUser(user);
+      setIsAuthenticated(true);
+    } catch (error) {
+      handleErrors(error);
+    }
   }
 
   //Funcion para remover los estados y cookie de acceso existentes
