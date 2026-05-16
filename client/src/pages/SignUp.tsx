@@ -19,7 +19,7 @@ export default function SignUp() {
     const { username, firstName, lastName, email, password, confirmPassword } = event.currentTarget;
 
     if (password.value.trim() !== confirmPassword.value.trim() || !password.value.trim() || !confirmPassword.value.trim()) {
-      showToastMsg({ msg: "Passwords dont't match", type: "error", position: "bottom-left", autoClose: 8000 });
+      showToastMsg({ message: "Passwords don't match", type: "error", position: "bottom-left", autoClose: 8000 });
       return;
     }
 

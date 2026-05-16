@@ -1,12 +1,12 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import AuthProvider from "./context/AuthContext.tsx";
+import ProtectedRoutes from "./ProtectedRoutes.tsx";
 import Home from "./pages/Home.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import SignUp from "./pages/SignUp.tsx";
 import ProfileConfig from "./pages/ProfileConfig.tsx";
-import AuthProvider from "./context/AuthContext.tsx";
-import ProtectedRoutes from "./ProtectedRoutes.tsx";
 
 import './index.css';
 

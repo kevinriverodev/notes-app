@@ -6,7 +6,7 @@ class ExpressServer {
 
 	constructor(port?: string) {
 		this.app = express();
-		port ? (this.port = port) : (this.port = process.env.PORT || "8080");
+		this.port = port || process.env.PORT || "8080";
 	}
 
 	setStaticPath(path: string = "public") {

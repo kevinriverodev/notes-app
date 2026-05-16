@@ -6,7 +6,6 @@ interface NotesListProps {
   onToggleModal: (isVisible: boolean) => void;
   onSelectNote: (note: NoteObj) => void;
   onToggleBtn: (isVisible: boolean) => void;
-
 }
 
 export default function NotesList({ notes, onToggleModal, onSelectNote, onToggleBtn }: NotesListProps) {
@@ -17,7 +16,7 @@ export default function NotesList({ notes, onToggleModal, onSelectNote, onToggle
       <ul className="w-full text-left">
         {
           notes.map((note: NoteObj) => (
-            <NotesListItem onToggleBtn={onToggleBtn} onSelectNote={onSelectNote} onToggleModal={onToggleModal} key={note.id} note={note} />
+            <NotesListItem key={note.id} onToggleBtn={onToggleBtn} onSelectNote={onSelectNote} onToggleModal={onToggleModal} note={note} />
           ))
         }
       </ul>

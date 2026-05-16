@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { authUser, registerUser, validateCookie } from "../controllers/auth";
-import { emailExist, usernameExist } from "../helpers/database-validations";
 import validateFields from "../middlewares/validate-fields";
+import { emailExist, usernameExist } from "../helpers/database-validations";
+import { authUser, registerUser, validateCookie } from "../controllers/auth";
 
 const router = Router();
 

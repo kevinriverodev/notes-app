@@ -10,7 +10,6 @@ interface NoteProps {
 }
 
 export default function Note({ noteId, title, description, onTogglemodal, onSelectNote, onToggleBtn }: NoteProps) {
-
   function handleFillDetailsForm() {
     onSelectNote({ id: noteId, title, description });
     onTogglemodal(true);

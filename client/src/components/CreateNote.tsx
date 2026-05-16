@@ -1,5 +1,7 @@
 import { useState, FormEvent } from "react";
 import { createNote } from "../api/note";
+import { handleErrors } from "../helpers/handle-errors";
+import { showToastMsg } from "../helpers/show-toast-msg";
 import Modal from "./Modal";
 import { NoteObj } from "../pages/Home";
 
@@ -12,7 +14,6 @@ interface CreateNoteProps {
 }
 
 export default function CreateNote({ isVisible, notes, onToggleModal, onCreateNote, onToggleBtn }: CreateNoteProps) {
-
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
@@ -20,25 +21,33 @@ export default function CreateNote({ isVisible, notes, onToggleModal, onCreateNo
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const note = await createNote(title, description);
+    try {
+      const note = await createNote(title, description);
 
-    if (!note) return;
+      onCreateNote(
+        [
+          {
+            id: note.id,
+            title: note.title,
+            description: note.description
+          },
+          ...notes
+        ]
+      );
 
-    onCreateNote(
-      [
-        {
-          id: note.id,
-          title: note.title,
-          description: note.description
-        },
-        ...notes
-      ]
-    );
+      showToastMsg({
+        message: "Note successfully created",
+        type: "success"
+      });
 
-    onToggleModal(false);
-    onToggleBtn(true);
-    setTitle("");
-    setDescription("");
+      onToggleModal(false);
+      onToggleBtn(true);
+      setTitle("");
+      setDescription("");
+      
+    } catch (error) {
+      handleErrors(error);
+    }
   }
 
   return (

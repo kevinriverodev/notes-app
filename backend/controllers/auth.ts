@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/user";
 import generateJWT from "../helpers/generate-jwt";
+import { sendError, sendSuccess } from "../helpers/response";
 
 export const authUser = async (req: Request, res: Response) => {
 	const { username, password } = req.body;
@@ -16,21 +17,21 @@ export const authUser = async (req: Request, res: Response) => {
 		});
 
 		if (!user) {
-			res.status(401).json({ errors: [{ msg: "Invalid username/email" }] });
+			sendError(res, "Invalid username/password", 401);
 			return;
 		}
 
 		const { id, status, password: hash, createdAt, updatedAt, ...data } = user.toJSON();
 
 		if (!status) {
-			res.status(401).json({ errors: [{ msg: "Inactive user" }] });
+			sendError(res, "Inactive user", 401);
 			return;
 		}
 
 		const isValidPassword = await bcrypt.compare(String(password), hash);
 
 		if (!isValidPassword) {
-			res.status(401).json({ errors: [{ msg: "Invalid password" }] });
+			sendError(res, "Invalid username/password", 401);
 			return;
 		}
 
@@ -38,12 +39,11 @@ export const authUser = async (req: Request, res: Response) => {
 
 		res.cookie("token", token, { sameSite: "none", secure: true });
 
-		res.status(200).json({
-			user: data,
-		});
+		sendSuccess(res, data, 200);
 
 	} catch (error: unknown) {
-		res.status(500).json(error);
+		console.log("Server error: ", error);
+		sendError(res, "An unexpected error occurred", 500);
 	}
 };
 
@@ -64,23 +64,17 @@ export const registerUser = async (req: Request, res: Response) => {
 			role: "USER",
 		});
 
-		if (!user) {
-			res.status(401).json({ errors: [{ msg: "Error registering user" }] });
-			return;
-		}
-
 		const { password: pass, status, id, createdAt, updatedAt, ...data } = user.toJSON();
 
 		const token = await generateJWT(id);
 
 		res.cookie("token", token, { sameSite: "none", secure: true });
 
-		res.status(201).json({
-			user: data,
-		});
+		sendSuccess(res, data, 201);
 
 	} catch (error: unknown) {
-		res.status(500).json(error);
+		console.log("Server error: ", error);
+		sendError(res, "An unexpected error occurred", 500);
 	}
 };
 
@@ -88,7 +82,7 @@ export const validateCookie = async (req: Request, res: Response) => {
 	const { token } = req.cookies;
 
 	if (!token) {
-		res.status(401).json({ errors: [{ msg: "Non-existent token in the request" }] });
+		sendError(res, "Non-existent token in the request", 401)
 		return;
 	}
 
@@ -107,15 +101,16 @@ export const validateCookie = async (req: Request, res: Response) => {
 		});
 
 		if (!userAuth) {
-			res.status(401).json({ errors: [{ msg: "Invalid token" }] });
+			sendError(res, "Invalid token", 401);
 			return;
 		}
 
 		const { id, status, password, createdAt, updatedAt, ...data } = userAuth.toJSON();
 
-		res.status(200).json({ user: data });
+		sendSuccess(res, data, 200);
 
 	} catch (error: unknown) {
-		res.status(500).json(error);
+		console.log("Server error: ", error);
+		sendError(res, "An unexpected error occurred", 500);
 	}
 };

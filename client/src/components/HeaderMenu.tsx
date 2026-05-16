@@ -1,14 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { FormEvent } from "react";
-import { useAuth } from "../hooks/useAuth";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
 import { FaUser } from "react-icons/fa";
 import { FaAngleDown } from "react-icons/fa6";
 import { FaSignOutAlt } from "react-icons/fa";
-
+import { useAuth } from "../hooks/useAuth";
 
 export default function HeaderMenu() {
-
   const { currentUser, signOut } = useAuth();
   const navigate = useNavigate();
 

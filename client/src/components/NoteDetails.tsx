@@ -2,9 +2,11 @@ import { FormEvent, useEffect, useState } from "react";
 import { FaPenToSquare } from "react-icons/fa6";
 import { FaFloppyDisk } from "react-icons/fa6";
 import { FaTrash } from "react-icons/fa6";
+import { deleteNote, updateNote } from "../api/note";
+import { handleErrors } from "../helpers/handle-errors";
+import { showToastMsg } from "../helpers/show-toast-msg";
 import { NoteObj } from "../pages/Home";
 import Modal from "./Modal"
-import { deleteNote, updateNote } from "../api/note";
 
 interface NoteDetailsProps {
   isVisible: boolean;
@@ -16,7 +18,6 @@ interface NoteDetailsProps {
 }
 
 export default function NoteDetails({ isVisible, note, notes, onChangeNote, onToggleModal, onToggleBtn }: NoteDetailsProps) {
-
   const [isReadOnly, setIsReadOnly] = useState<boolean>(true);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -28,47 +29,65 @@ export default function NoteDetails({ isVisible, note, notes, onChangeNote, onTo
 
   //Funcion para manejar el submit del form y eliminar nota
   async function handleDeleteNote() {
-    const deletedNote = await deleteNote(note.id);
+    try {
+      const deletedNote = await deleteNote(note.id);
 
-    if (!deletedNote) return;
+      const filteredNotes = notes.filter((note) => note.id !== deletedNote.id);
 
-    const filteredNotes = notes.filter((note) => note.id !== deletedNote.id);
+      onChangeNote([
+        ...filteredNotes
+      ]);
 
-    onChangeNote([
-      ...filteredNotes
-    ]);
+      showToastMsg({
+        message: "Note successfully deleted",
+        type: "success"
+      });
 
-    onToggleModal(false);
-    onToggleBtn(true);
+      onToggleModal(false);
+      onToggleBtn(true);
+
+    } catch (error) {
+      handleErrors(error);
+    }
   }
 
   //Funcion para manejar el submit del form y editar nota
   async function handleUpdateNote(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const updatedNote = await updateNote(note.id, title, description);
+    try {
+      const updatedNote = await updateNote(note.id, title, description);
 
-    const updatedNotes = notes.map(noteobj => {
-      if (noteobj.id === note.id) {
-        return {
-          ...noteobj,
-          title: updatedNote.title,
-          description: updatedNote.description
-        };
-      }
-      return noteobj;
-    });
+      const updatedNotes = notes.map(noteobj => {
+        if (noteobj.id === note.id) {
+          return {
+            ...noteobj,
+            title: updatedNote.title,
+            description: updatedNote.description
+          };
+        }
+        return noteobj;
+      });
 
-    onChangeNote(updatedNotes);
-    setIsReadOnly(true);
-    onToggleModal(false);
-    onToggleBtn(true);
+      showToastMsg({
+        message: "Note successfully updated",
+        type: "success"
+      })
+
+      onChangeNote(updatedNotes);
+      setIsReadOnly(true);
+      onToggleModal(false);
+      onToggleBtn(true);
+
+    } catch (error) {
+      handleErrors(error);
+    }
   }
 
   return (
     <Modal onToggleBtn={onToggleBtn} isVisible={isVisible} onToggleModal={onToggleModal} onStopEditing={setIsReadOnly} >
       <form action="#" onSubmit={handleUpdateNote} className="flex flex-col gap-6 w-full h-auto">
-        <fieldset className="flex flex-col text-[#e2e2e2] gap-y-5 mt-5">
+        <fieldset key={note.id} className="flex flex-col text-[#e2e2e2] gap-y-5 mt-5">
           <input readOnly={isReadOnly}  onChange={(e) => setTitle(e.currentTarget.value)} className="font-bold text-2xl focus:outline-0 p-5 rounded-sm" type="text" name="title" value={title} required />
           <textarea readOnly={isReadOnly} onChange={(e) => setDescription(e.currentTarget.value)} className="w-full h-90 focus:outline-0 p-5 resize-none rounded-sm" name="description" value={description} required />
         </fieldset>

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/user";
+import { sendError } from "../helpers/response";
 
 declare global {
 	namespace Express {
@@ -17,7 +18,7 @@ const validateJWT = async (req: Request, res: Response, next: Function) => {
 	const { token } = req.cookies;
 
 	if (!token) {
-		res.status(401).json({ errors: [{ msg: "Non-existent token in the request" }] });
+		sendError(res, "Non-existent token in the request", 401);
 		return;
 	}
 
@@ -36,14 +37,14 @@ const validateJWT = async (req: Request, res: Response, next: Function) => {
 		});
 
 		if (!userAuth) {
-			res.status(401).json({ errors: [{ msg: "Invalid token - Unregistered user" }] });
+			sendError(res, "Invalid token", 401);
 			return;
 		}
 
 		const { status, id, role } = userAuth.toJSON();
 
 		if (!status) {
-			res.status(401).json({ errors: [{ msg: "Invalid token - Inactive user" }] });
+			sendError(res, "Invalid token", 401);
 			return;
 		}
 
@@ -55,8 +56,8 @@ const validateJWT = async (req: Request, res: Response, next: Function) => {
 		next();
 
 	} catch (error: unknown) {
-		res.status(500).json(error);
-		console.log(error);
+		console.log("Server error: ", error);
+		sendError(res, "An unexpected error occurred", 500);
 	}
 };
 

@@ -1,7 +1,9 @@
 import { FormEvent, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
-import MainHeader from "../components/MainHeader";
+import { handleErrors } from "../helpers/handle-errors";
+import { showToastMsg } from "../helpers/show-toast-msg";
 import { updateUser } from "../api/user";
+import MainHeader from "../components/MainHeader";
 
 export default function ProfileConfig() {
   const [isBtnDisabled, setIsBtnDisabled] = useState<boolean>(true);
@@ -13,12 +15,30 @@ export default function ProfileConfig() {
 
     const { username, firstName, lastName, email, password, confirmPassword } = event.currentTarget;
 
-    const user = await updateUser(username.value, firstName.value, lastName.value, email.value, password.value, confirmPassword.value);
+    if (password.value.trim() || confirmPassword.value.trim()) {
+      if (password.value.trim() !== confirmPassword.value.trim() || !password.value.trim() || !confirmPassword.value.trim()) {
+        showToastMsg({
+          message: "Passwords don't match",
+          type: "error"
+        });
+        return;
+      }
+    }
 
-    if (!user) return;
+    try {
+      const user = await updateUser(username.value, firstName.value, lastName.value, email.value, password.value);
 
-    setIsBtnDisabled(true);
-    setCurrentUser(user);
+      showToastMsg({
+        message: "User successfully updated",
+        type: "success"
+      });
+
+      setIsBtnDisabled(true);
+      setCurrentUser(user);
+      
+    } catch (error) {
+      handleErrors(error);
+    }
   }
 
   return (
