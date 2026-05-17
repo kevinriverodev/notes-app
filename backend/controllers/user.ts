@@ -28,11 +28,10 @@ export const getUsers = async (req: Request, res: Response) => {
 		});
 
 		sendSuccess(res, { count: users.count, users: userData }, 200);
-		return;
+
 	} catch (error: unknown) {
 		console.log("Server error: ", error);
 		sendError(res, "An unexpected error occurred", 500);
-		return;
 	}
 };
 
@@ -60,11 +59,10 @@ export const getUser = async (req: Request, res: Response) => {
 		const { password, status, ...data } = user.toJSON();
 
 		sendSuccess(res, data, 200);
-		return;
+
 	} catch (error: unknown) {
 		console.log("Server error: ", error);
 		sendError(res, "An unexpected error occurred", 500);
-		return;
 	}
 };
 
@@ -90,19 +88,13 @@ export const createUser = async (req: Request, res: Response) => {
 			role,
 		});
 
-		if (!user) {
-			sendError(res, "Error registering  user", 400);
-			return;
-		}
-
 		const { password: pass, status, ...data } = user.toJSON();
 
 		sendSuccess(res, data, 201);	
-		return;
+
 	} catch (error: unknown) {
 		console.log("Server error: ", error);
 		sendError(res, "An unexpected error occurred", 500);
-		return;
 	}
 };
 
@@ -144,11 +136,10 @@ export const updateUser = async (req: Request, res: Response) => {
 		const { password: pass, status, updatedAt, createdAt, ...data } = user.toJSON();
 
 		sendSuccess(res, data, 200);
-		return;
+
 	} catch (error: unknown) {
 		console.log("Server error: ", error);
 		sendError(res, "An unexpected error occurred", 500);
-		return;
 	}
 };
 
@@ -177,10 +168,9 @@ export const deleteUser = async (req: Request, res: Response) => {
 		const { password, status, ...data } = user.toJSON();
 
 		sendSuccess(res, data, 200);
-		return;
+
 	} catch (error: unknown) {
 		console.log("Server error: ", error);
 		sendError(res, "An unexpected error occurred", 500);
-		return;
 	}
 };

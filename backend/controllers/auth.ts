@@ -40,11 +40,10 @@ export const authUser = async (req: Request, res: Response) => {
 		res.cookie("token", token, { sameSite: "none", secure: true });
 
 		sendSuccess(res, data, 200);
-		return;
+
 	} catch (error: unknown) {
 		console.log("Server error: ", error);
 		sendError(res, "An unexpected error occurred", 500);
-		return;
 	}
 };
 
@@ -65,11 +64,6 @@ export const registerUser = async (req: Request, res: Response) => {
 			role: "USER",
 		});
 
-		if (!user) {
-			sendError(res, "Error registering user", 401);
-			return;
-		}
-
 		const { password: pass, status, id, createdAt, updatedAt, ...data } = user.toJSON();
 
 		const token = await generateJWT(id);
@@ -77,11 +71,10 @@ export const registerUser = async (req: Request, res: Response) => {
 		res.cookie("token", token, { sameSite: "none", secure: true });
 
 		sendSuccess(res, data, 201);
-		return;
+
 	} catch (error: unknown) {
 		console.log("Server error: ", error);
 		sendError(res, "An unexpected error occurred", 500);
-		return;
 	}
 };
 
@@ -115,10 +108,9 @@ export const validateCookie = async (req: Request, res: Response) => {
 		const { id, status, password, createdAt, updatedAt, ...data } = userAuth.toJSON();
 
 		sendSuccess(res, data, 200);
-		return;
+
 	} catch (error: unknown) {
 		console.log("Server error: ", error);
 		sendError(res, "An unexpected error occurred", 500);
-		return;
 	}
 };

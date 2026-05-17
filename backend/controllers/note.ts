@@ -38,7 +38,6 @@ export const getUserNotes = async (req: Request, res: Response) => {
 			}
 
 			sendSuccess(res, notes, 200);
-			return;
 		} else {
 			const notes = await Note.findAndCountAll({
 				where: {
@@ -52,14 +51,12 @@ export const getUserNotes = async (req: Request, res: Response) => {
 				sendError(res, "No notes found", 400);
 				return;
 			}
-
+		
 			sendSuccess(res, notes, 200);
-			return;
 		}
 	} catch (error: unknown) {
 		console.log("Server error: ", error);
 		sendError(res, "An unexpected error occurred", 500);
-		return;
 	}
 };
 
@@ -86,11 +83,10 @@ export const getNoteById = async (req: Request, res: Response) => {
 		}
 
 		sendSuccess(res, note, 200);
-		return;
+
 	} catch (error: unknown) {
 		console.log("Server error: ", error);
 		sendError(res, "An unexpected error occurred", 500);
-		return;
 	}
 };
 
@@ -110,17 +106,11 @@ export const createNote = async (req: Request, res: Response) => {
 			userId: req.user.id,
 		});
 
-		if (!note) {
-			sendError(res, "Error creating note", 400);
-			return;
-		}
-
 		sendSuccess(res, note, 201);  
-		return;  
+
 	} catch (error: unknown) {
 		console.log("Server error: ", error);
 		sendError(res, "An unexpected error occurred", 500);
-		return;
 	}
 };
 
@@ -149,11 +139,10 @@ export const updateNote = async (req: Request, res: Response) => {
 		note.update({ title, description });
 
 		sendSuccess(res, note, 200);
-		return;
+
 	} catch (error: unknown) {
 		console.log("Server error: ", error);
 		sendError(res, "An unexpected error occurred", 500);
-		return;
 	}
 };
 
@@ -181,10 +170,9 @@ export const deleteNote = async (req: Request, res: Response) => {
 		await note.update({ status: false });
 
 		sendSuccess(res, note, 200);
-		return;
+
 	} catch (error: unknown) {
 		console.log("Server error: ", error);
 		sendError(res, "An unexpected error occurred", 500);
-		return;
 	}
 };

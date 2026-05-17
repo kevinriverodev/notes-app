@@ -75,7 +75,7 @@ export async function action({ request }: ActionFunctionArgs) {
   if (password.trim() || confirmPassword.trim()) {
 		if (password.trim() !== confirmPassword.trim() || !password.trim() || !confirmPassword.trim()) {
 			showToastMsg({
-				message: "Passwords dont't match",
+				message: "Passwords don't match",
 				type: "error"
 			});
 			return;
